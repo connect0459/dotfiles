@@ -1,6 +1,6 @@
 # コードコメント規約
 
-> 哲学的背景・原則の概要: `dev-settings/coding-agents/agent-docs/essences/living-documentation.md`（「コードコメントへの適用」セクション）
+> 哲学的背景・原則の概要: `~/.connect0459/coding-agents/agent-docs/essences/living-documentation.md`（「コードコメントへの適用」セクション）
 
 ## ユーザーが手動でコメントを書く場合の原則
 

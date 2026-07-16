@@ -51,7 +51,7 @@
 - **Red/Green TDD**: Red → Green → Refactor
 - **デトロイト派**: モックは外部境界のみ
 - **Living Documentation**: テスト名で仕様表現
-  - 詳細: `dev-settings/coding-agents/agent-docs/essences/living-documentation.md`
+  - 詳細: `~/.connect0459/coding-agents/agent-docs/essences/living-documentation.md`
 - **Test Object Pattern**: テストデータを構造体で管理
   - ただし、リポジトリごとに思想が違うので、リポジトリ毎の一般的なパターンに合わせること
 - **カバレッジ**: 実装前にユーザーと目標協議
@@ -65,7 +65,7 @@
 ### コーディング規約
 
 - **命名**: 理解しやすさ・簡潔さ・一貫性・区別しやすさの4原則に従う
-  - 詳細: `dev-settings/coding-agents/agent-docs/essences/naming-things.md`
+  - 詳細: `~/.connect0459/coding-agents/agent-docs/essences/naming-things.md`
 - **リファクタリング**: Tidyings（2分以内）vs Refactoring（計画的）
   - 詳細: `~/.connect0459/coding-agents/agent-docs/conventions/tidyings-vs-refactoring.md`
 - **記述原則**: コードにHow、テストにWhat、コミットログにWhy

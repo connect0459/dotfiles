@@ -21,7 +21,7 @@ This is a personal dotfiles repository. It manages real shell rc files (`.bashrc
 
 ### Directory naming
 
-- A directory or file gets the `dot-foo` prefix **only** when it is symlinked or physically copied 1:1 onto a real hidden path (e.g. `~/.foo`), as `coding-agents/dot-claude/` is.
+- A directory or file gets the `dot-foo` prefix **only** when it is symlinked, physically copied 1:1, or merged onto a real hidden path (e.g. `~/.foo`) — as `coding-agents/dot-claude/settings.json` is, via a merge into `~/.claude/settings.json`.
 - Content that is not itself a hidden-path target (tooling, documentation, source scripts) uses a plain name — do not prefix it with `dot-`.
 
 ### Shell scripts

@@ -120,7 +120,7 @@ func GetUsers() []User { ... }
 - Why not を表しているか確認する
 - Why not は意図的な判断を伴うため**人間が書くべき**（AI が生成するコメントは Why になりがち）
 
-詳細・実践例: `dev-settings/coding-agents/agent-docs/conventions/code-comments.md`
+詳細・実践例: `~/.connect0459/coding-agents/agent-docs/conventions/code-comments.md`
 
 ### コミットメッセージへの適用
 
@@ -143,8 +143,6 @@ feat: ユーザー登録時のメールアドレス検証を追加
 ```
 
 **TDD 時のコミット分離**: `test:（失敗）→ feat:（最小実装）→ refactor:（整理）` の3コミットに分ける。
-
-詳細・実践例: `dev-settings/coding-agents/agent-docs/conventions/commit-messages.md`
 
 ---
 
