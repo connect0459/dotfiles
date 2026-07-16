@@ -12,10 +12,14 @@ if ! command -v brew &> /dev/null; then
   exit 1
 fi
 
-pln "$(term_bold 'Installing macOS dependencies from Brewfile')"
-
 if [ -f "$REPO_DIR/home/Brewfile" ]; then
-  brew bundle install --file="$REPO_DIR/home/Brewfile"
+  pln "$(term_bold 'Installing macOS dependencies from Brewfile')"
+
+  if [ -n "$SETUP_MACOS_DRY_RUN" ]; then
+    pln "$(term_cyan '[DRY RUN] Would install from' "$REPO_DIR/home/Brewfile")"
+  else
+    brew bundle install --file="$REPO_DIR/home/Brewfile"
+  fi
 else
   pln "$(term_red 'Brewfile not found at' "$REPO_DIR/home/Brewfile")" >&2
   exit 1
