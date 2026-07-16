@@ -30,7 +30,7 @@ One faithfully-ported quirk from the original `main.py`: the report's symlink ro
 | `checksum.sh` | `checksum.py` | Ported for equality/inequality behavior only; exact hash values are not required to match |
 | `symlink.sh` | `symlink.py` | |
 | `dirsync.sh` | `dirsync.py` | |
-| `permissions.sh` | `permissions.py` | Despite the name, performs a shallow merge of every top-level key from source, not just `permissions` (behavior asserted by `test_permissions.py`). The original repo's README describes this inaccurately. |
+| `permissions.sh` | `permissions.py` | Despite the name, merges every top-level key from source into target, not just `permissions`. Diverges from the original: `permissions.allow`/`deny`/`ask` are unioned (deduped, sorted) rather than replaced outright, so a locally-added permission entry survives a sync where source doesn't mention it — see the comment in `permissions.sh` for the tradeoff this accepts. |
 | `term.sh` | `term.py` | `TERM_FORCE_COLOR=1` overrides the tty check (for tests) |
 | `sync.sh` | `main.py` | Orchestration; see Scope above |
 

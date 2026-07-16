@@ -27,13 +27,13 @@ teardown() {
   [ "$(jq -r '.permissions.allow[0]' "$TMP/target.json")" = "write" ]
 }
 
-@test "merge overwrites existing permissions" {
+@test "merge unions new source permissions with existing target permissions" {
   printf '{"permissions": {"allow": ["new"]}}' > "$TMP/source.json"
   printf '{"permissions": {"allow": ["old"]}}' > "$TMP/target.json"
 
   permissions_merge "$TMP/source.json" "$TMP/target.json"
 
-  [ "$(jq -r '.permissions.allow[0]' "$TMP/target.json")" = "new" ]
+  [ "$(jq -c '.permissions.allow' "$TMP/target.json" | tr -d '\n')" = '["new","old"]' ]
 }
 
 @test "merge preserves non-permissions fields in target" {
@@ -43,7 +43,35 @@ teardown() {
   permissions_merge "$TMP/source.json" "$TMP/target.json"
 
   [ "$(jq -r '.theme' "$TMP/target.json")" = "dark" ]
-  [ "$(jq -c '.permissions.allow' "$TMP/target.json")" = "[]" ]
+  [ "$(jq -c '.permissions.allow' "$TMP/target.json")" = '["old"]' ]
+}
+
+@test "merge preserves a target-only permission entry not present in source" {
+  printf '{"permissions": {"allow": ["Bash(git status:*)"], "deny": ["Bash(sudo:*)"]}}' > "$TMP/source.json"
+  printf '{"permissions": {"allow": ["Bash(git status:*)", "Bash(my-local-tool:*)"], "deny": ["Bash(sudo:*)"]}}' > "$TMP/target.json"
+
+  permissions_merge "$TMP/source.json" "$TMP/target.json"
+
+  [ "$(jq '.permissions.allow | length' "$TMP/target.json")" = "2" ]
+  [ "$(jq 'any(.permissions.allow[]; . == "Bash(my-local-tool:*)")' "$TMP/target.json")" = "true" ]
+}
+
+@test "merge deduplicates a permission entry present in both source and target" {
+  printf '{"permissions": {"allow": ["Bash(git status:*)"]}}' > "$TMP/source.json"
+  printf '{"permissions": {"allow": ["Bash(git status:*)"]}}' > "$TMP/target.json"
+
+  permissions_merge "$TMP/source.json" "$TMP/target.json"
+
+  [ "$(jq '.permissions.allow | length' "$TMP/target.json")" = "1" ]
+}
+
+@test "merge unions the deny list without dropping target-only entries" {
+  printf '{"permissions": {"deny": ["Bash(rm -rf:*)"]}}' > "$TMP/source.json"
+  printf '{"permissions": {"deny": ["Bash(rm -rf:*)", "Bash(my-local-deny:*)"]}}' > "$TMP/target.json"
+
+  permissions_merge "$TMP/source.json" "$TMP/target.json"
+
+  [ "$(jq '.permissions.deny | length' "$TMP/target.json")" = "2" ]
 }
 
 @test "merge applies all top-level source fields to target" {
