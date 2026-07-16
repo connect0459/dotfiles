@@ -162,7 +162,6 @@ func TestUserService(t *testing.T) {
 ## Evergreenテストの原則
 
 テストは時間が経っても価値を保ち続ける内容に焦点を当てる。
-詳細は `agent-docs/testing/evergreen-principles.md` を参照してください。
 
 ### Evergreenの基本原則
 

@@ -288,6 +288,7 @@ package registry
 
 import (
     "myapp/internal/application/services"
+    "myapp/internal/domain/repositories"
     "myapp/internal/infrastructure/persistence"
     "myapp/internal/presentation/handlers"
     "gorm.io/gorm"
