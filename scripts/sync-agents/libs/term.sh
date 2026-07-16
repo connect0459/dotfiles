@@ -22,3 +22,7 @@ term_red()        { term_wrap "31" "$1"; }
 term_green()      { term_wrap "32" "$1"; }
 term_cyan()       { term_wrap "36" "$1"; }
 term_bold_green() { term_wrap "1;32" "$1"; }
+
+pln() {
+  printf '%s\n' "$1"
+}

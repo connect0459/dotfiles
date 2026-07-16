@@ -1,6 +1,6 @@
 # コードコメント規約
 
-> 哲学的背景・原則の概要: `~/.connect0459/coding-agents/agent-docs/essences/living-documentation.md`（「コードコメントへの適用」セクション）
+> 哲学的背景・原則の概要: `~/.agents/agent-docs/essences/living-documentation.md`（「コードコメントへの適用」セクション）
 
 ## ユーザーが手動でコメントを書く場合の原則
 
@@ -183,7 +183,7 @@ for i in 0..items.len() {
 ## 参考資料
 
 - [コードコメントにおける「Why Not」の重要性](https://zenn.dev/never_be_a_pm/articles/69d204df1a8c4a)
-- Evergreen原則: `~/.connect0459/coding-agents/agent-docs/testing/tdd-workflow.md`
+- Evergreen原則: `~/.agents/agent-docs/testing/tdd-workflow.md`
 
 ## まとめ
 

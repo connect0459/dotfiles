@@ -1,21 +1,17 @@
 #!/usr/bin/env bash
-# Ported from sync_cmd/main.py: wires the lib/*.sh functions together into the
-# real sync against $HOME. SYNC_SOURCE_DIR overrides the source coding-agents
-# directory (used by sync/test/sync.bats so tests never touch the real $HOME
-# or read from the real source).
+# Ported from sync_cmd/main.py: wires the libs/*.sh functions together into the
+# real sync against $HOME. SYNC_SOURCE_DIR overrides the source home
+# directory (used by scripts/sync-agents/tests/sync-agents.bats so tests
+# never touch the real $HOME or read from the real source).
 
 # shellcheck disable=SC1091
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-LIB_DIR="$SCRIPT_DIR/lib"
+LIB_DIR="$SCRIPT_DIR/libs"
 source "$LIB_DIR/checksum.sh"
 source "$LIB_DIR/dirsync.sh"
 source "$LIB_DIR/permissions.sh"
 source "$LIB_DIR/symlink.sh"
 source "$LIB_DIR/term.sh"
-
-pln() {
-  printf '%s\n' "$1"
-}
 
 _repeat() {
   local char="$1" count="$2" out=""
@@ -26,14 +22,14 @@ _repeat() {
   printf '%s' "$out"
 }
 
-SOURCE_DIR="${SYNC_SOURCE_DIR:-$(cd "$SCRIPT_DIR/.." && pwd)/coding-agents}"
-CENTRAL_DIR="$HOME/.connect0459/coding-agents"
+SOURCE_DIR="${SYNC_SOURCE_DIR:-$(cd "$SCRIPT_DIR/../.." && pwd)/home}"
+CENTRAL_DIR="$HOME/.agents"
 CLAUDE_DIR="$HOME/.claude"
 GITHUB_DIR="$HOME/.github"
 
-SOURCE_AGENTS_MD="$SOURCE_DIR/AGENTS.md"
-SOURCE_AGENT_DOCS="$SOURCE_DIR/agent-docs"
-SOURCE_SETTINGS="$SOURCE_DIR/dot-claude/settings.json"
+SOURCE_AGENTS_MD="$SOURCE_DIR/dot_agents/AGENTS.md"
+SOURCE_AGENT_DOCS="$SOURCE_DIR/dot_agents/agent-docs"
+SOURCE_SETTINGS="$SOURCE_DIR/dot_claude/settings.json"
 
 CENTRAL_AGENTS_MD="$CENTRAL_DIR/AGENTS.md"
 CENTRAL_AGENT_DOCS="$CENTRAL_DIR/agent-docs"

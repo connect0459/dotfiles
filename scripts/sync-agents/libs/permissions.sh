@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Ported from sync_cmd/permissions.py, extended to avoid data loss when this
-# is wired up against a real, live ~/.claude/settings.json (see sync.sh).
+# is wired up against a real, live ~/.claude/settings.json (see sync-agents.sh).
 #
 # Every top-level key in source is merged into target (source wins on
 # conflicts, target-only keys are preserved) -- despite the module name, this
