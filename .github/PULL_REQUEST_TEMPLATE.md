@@ -20,8 +20,9 @@ It is difficult to review without knowing the specifications and background.
 
 ## Scope of Change
 
-- [ ] Shell dotfiles (`.bashrc` / `.bash_profile` / `.bash_aliases` / `.config/`)
-- [ ] `sync/` (coding-agent config sync tool)
+- [ ] Shell dotfiles (`home/.bashrc` / `home/.bash_profile` / `home/.bash_aliases` / `home/dot_config/`)
+- [ ] `scripts/sync-agents/` (coding-agent config sync tool)
+- [ ] `scripts/setup.sh` (bootstrap entry point)
 - [ ] Tooling / CI
 - [ ] Documentation (`AGENTS.md` / `README.md`)
 
@@ -48,14 +49,14 @@ without this information.
 ## Test Items
 
 - Describe any test considerations beyond the automated bats suite.
-- Note whether `bats sync/test/*.bats` and `shellcheck sync/lib/*.sh` were run locally.
+- Note whether `bats scripts/sync-agents/tests/*.bats scripts/tests/*.bats` and `shellcheck scripts/sync-agents/libs/*.sh scripts/sync-agents/sync-agents.sh scripts/setup.sh` were run locally.
 
 ## [Required] Quality Checklist
 
 **Please check all items before merging.**
 
-- [ ] **Shell Tests**: `bats sync/test/*.bats` passes
-- [ ] **Lint**: `shellcheck sync/lib/*.sh` reports no warnings
-- [ ] **Docs in sync**: `AGENTS.md` / `sync/README.md` reflect the actual current scope
+- [ ] **Shell Tests**: `bats scripts/sync-agents/tests/*.bats scripts/tests/*.bats` passes
+- [ ] **Lint**: `shellcheck scripts/sync-agents/libs/*.sh scripts/sync-agents/sync-agents.sh scripts/setup.sh` reports no warnings
+- [ ] **Docs in sync**: `AGENTS.md` / `scripts/sync-agents/README.md` reflect the actual current scope
 
 > **Important**: This checklist ensures quality. Please verify all items before requesting review.

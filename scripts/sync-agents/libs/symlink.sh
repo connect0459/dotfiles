@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Ported from sync_cmd/symlink.py, extended with a backup step: this is
-# wired up against a real, live ~/.claude/CLAUDE.md by sync.sh, so replacing
+# wired up against a real, live ~/.claude/CLAUDE.md by sync-agents.sh, so replacing
 # a pre-existing real file (not yet a symlink) needs to be recoverable
 # rather than a silent, unrecoverable loss of whatever it used to contain.
 

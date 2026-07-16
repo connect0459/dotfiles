@@ -6,7 +6,7 @@ git-cleanup-merged() {
     git show-ref --verify --quiet refs/heads/master && has_master=1
 
     if [[ -n "$has_main" && -n "$has_master" ]]; then
-        echo "エラー: main と master が両方存在します。基準ブランチを明示してください。" >&2
+        echo "Error: Both 'main' and 'master' exist. Please specify the base branch." >&2
         return 1
     fi
 
@@ -15,7 +15,7 @@ git-cleanup-merged() {
     local default_branch
     default_branch=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@')
     if [[ -z "$default_branch" ]]; then
-        echo "エラー: origin/HEAD からデフォルトブランチを判定できません。" >&2
+        echo "Error: Could not determine the default branch from origin/HEAD." >&2
         return 1
     fi
 

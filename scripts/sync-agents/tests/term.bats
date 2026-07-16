@@ -1,7 +1,7 @@
 #!/usr/bin/env bats
 
 setup() {
-  LIB_DIR="$(cd "$(dirname "$BATS_TEST_FILENAME")/.." && pwd)/lib"
+  LIB_DIR="$(cd "$(dirname "$BATS_TEST_FILENAME")/.." && pwd)/libs"
   source "$LIB_DIR/term.sh"
 }
 

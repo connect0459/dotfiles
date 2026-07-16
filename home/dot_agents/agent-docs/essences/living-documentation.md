@@ -120,7 +120,7 @@ func GetUsers() []User { ... }
 - Why not を表しているか確認する
 - Why not は意図的な判断を伴うため**人間が書くべき**（AI が生成するコメントは Why になりがち）
 
-詳細・実践例: `~/.connect0459/coding-agents/agent-docs/conventions/code-comments.md`
+詳細・実践例: `~/.agents/agent-docs/conventions/code-comments.md`
 
 ### コミットメッセージへの適用
 

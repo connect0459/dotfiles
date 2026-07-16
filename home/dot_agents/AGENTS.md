@@ -28,22 +28,22 @@
 ### 実装パターン
 
 - **ドメインオブジェクト**: Rich Domain Objects、値オブジェクト、エンティティ
-  - 実装例: `~/.connect0459/coding-agents/agent-docs/examples/domain-objects.md`
-  - 設計哲学: `~/.connect0459/coding-agents/agent-docs/philosophy/designing-domain-objects.md`
+  - 実装例: `~/.agents/agent-docs/examples/domain-objects.md`
+  - 設計哲学: `~/.agents/agent-docs/philosophy/designing-domain-objects.md`
 - **リポジトリ**: 抽象型定義（domain）→ 実装（infrastructure）
-  - 詳細: `~/.connect0459/coding-agents/agent-docs/examples/repository-pattern.md`
+  - 詳細: `~/.agents/agent-docs/examples/repository-pattern.md`
 
 アーキテクチャの例は以下を参照:
 
-- オニオンアーキテクチャ: `~/.connect0459/coding-agents/agent-docs/architecture/onion-architecture.md`
-- Package by Features: `~/.connect0459/coding-agents/agent-docs/architecture/package-by-features.md`
+- オニオンアーキテクチャ: `~/.agents/agent-docs/architecture/onion-architecture.md`
+- Package by Features: `~/.agents/agent-docs/architecture/package-by-features.md`
 
 ### アーキテクチャ
 
 - **バックエンド（Go/Rust）**: オニオンアーキテクチャ
-  - 詳細: `~/.connect0459/coding-agents/agent-docs/architecture/onion-architecture.md`
+  - 詳細: `~/.agents/agent-docs/architecture/onion-architecture.md`
 - **フロントエンド**: Package by Features
-  - 詳細: `~/.connect0459/coding-agents/agent-docs/architecture/package-by-features.md`
+  - 詳細: `~/.agents/agent-docs/architecture/package-by-features.md`
 - **フルスタックフレームワーク**: 標準構成を尊重（Laravel等）
 
 ### テスト戦略
@@ -51,26 +51,26 @@
 - **Red/Green TDD**: Red → Green → Refactor
 - **デトロイト派**: モックは外部境界のみ
 - **Living Documentation**: テスト名で仕様表現
-  - 詳細: `~/.connect0459/coding-agents/agent-docs/essences/living-documentation.md`
+  - 詳細: `~/.agents/agent-docs/essences/living-documentation.md`
 - **Test Object Pattern**: テストデータを構造体で管理
   - ただし、リポジトリごとに思想が違うので、リポジトリ毎の一般的なパターンに合わせること
 - **カバレッジ**: 実装前にユーザーと目標協議
 - **テストサイズ**: Small / Medium / Large で制約条件を共通語彙化し、エージェントへの指示にも活用
 - **詳細**:
-  - TDDワークフロー: `~/.connect0459/coding-agents/agent-docs/testing/tdd-workflow.md`
-  - テストパターン: `~/.connect0459/coding-agents/agent-docs/testing/test-object-pattern.md`
-  - カバレッジ目標: `~/.connect0459/coding-agents/agent-docs/testing/coverage-goals.md`
-  - テストサイズ戦略: `~/.connect0459/coding-agents/agent-docs/testing/test-sizes.md`
+  - TDDワークフロー: `~/.agents/agent-docs/testing/tdd-workflow.md`
+  - テストパターン: `~/.agents/agent-docs/testing/test-object-pattern.md`
+  - カバレッジ目標: `~/.agents/agent-docs/testing/coverage-goals.md`
+  - テストサイズ戦略: `~/.agents/agent-docs/testing/test-sizes.md`
 
 ### コーディング規約
 
 - **命名**: 理解しやすさ・簡潔さ・一貫性・区別しやすさの4原則に従う
-  - 詳細: `~/.connect0459/coding-agents/agent-docs/essences/naming-things.md`
+  - 詳細: `~/.agents/agent-docs/essences/naming-things.md`
 - **リファクタリング**: Tidyings（2分以内）vs Refactoring（計画的）
-  - 詳細: `~/.connect0459/coding-agents/agent-docs/conventions/tidyings-vs-refactoring.md`
+  - 詳細: `~/.agents/agent-docs/conventions/tidyings-vs-refactoring.md`
 - **記述原則**: コードにHow、テストにWhat、コミットログにWhy
 - **コードコメント**: **基本的に書かない** 。書く場合はユーザーの明示的な許可が必要
-  - コードコメント規約の詳細: `~/.connect0459/coding-agents/agent-docs/conventions/code-comments.md`
+  - コードコメント規約の詳細: `~/.agents/agent-docs/conventions/code-comments.md`
 
 ## 協働ルール
 
@@ -108,8 +108,8 @@
   - ただしスパイク（仕様探索）の場合はユーザーと合意の上で例外とし、スパイク後は破棄または正式実装で書き直す。
 - **内部境界でモックを使わない**:
   - ドメインオブジェクト同士の協調はインメモリ実装でテストする。
-  - 外部I/O（DB・HTTP・ファイル等）との境界ではモックが合理的。詳細は `~/.connect0459/coding-agents/agent-docs/testing/tdd-workflow.md` を参照。
+  - 外部I/O（DB・HTTP・ファイル等）との境界ではモックが合理的。詳細は `~/.agents/agent-docs/testing/tdd-workflow.md` を参照。
 
 ---
 
-すべての詳細ドキュメントは `~/.connect0459/coding-agents/agent-docs/` に配置されています。
+すべての詳細ドキュメントは `~/.agents/agent-docs/` に配置されています。
