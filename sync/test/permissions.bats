@@ -65,3 +65,22 @@ teardown() {
   [ "$(jq 'has("permissions")' "$TMP/target.json")" = "false" ]
   [ "$(jq -r '.other' "$TMP/target.json")" = "value" ]
 }
+
+@test "merge fails and leaves target untouched when source is missing" {
+  printf '{"theme": "dark"}' > "$TMP/target.json"
+
+  run permissions_merge "$TMP/does-not-exist.json" "$TMP/target.json"
+
+  [ "$status" -ne 0 ]
+  [ "$(jq -r '.theme' "$TMP/target.json")" = "dark" ]
+}
+
+@test "merge fails and leaves target untouched when source is invalid JSON" {
+  printf 'not json' > "$TMP/source.json"
+  printf '{"theme": "dark"}' > "$TMP/target.json"
+
+  run permissions_merge "$TMP/source.json" "$TMP/target.json"
+
+  [ "$status" -ne 0 ]
+  [ "$(jq -r '.theme' "$TMP/target.json")" = "dark" ]
+}
