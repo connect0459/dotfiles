@@ -1,17 +1,15 @@
-# Development tasks for dotfiles repository
-
 # List available recipes
 default:
   @just --list
 
-# Lint shell scripts with shellcheck (no warnings allowed)
-lint:
-  shellcheck $(find scripts -name "*.sh" -type f)
+# Lint shell scripts - Usage: just lint [path]
+lint path="scripts":
+  shellcheck $(find {{path}} -name "*.sh" -type f)
 
-# Run all tests
-test:
-  bats $(find scripts -name "*.bats" -type f)
+# Run tests - Usage: just test [path]
+test path="scripts":
+  bats $(find {{path}} -name "*.bats" -type f)
 
 # Run lint and test
-verify: lint test
+verify: (lint "scripts") (test "scripts")
   @echo "✓ All checks passed"
