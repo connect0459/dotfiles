@@ -1,0 +1,29 @@
+# Git
+git-cleanup-merged() {
+    local has_main has_master
+
+    git show-ref --verify --quiet refs/heads/main && has_main=1
+    git show-ref --verify --quiet refs/heads/master && has_master=1
+
+    if [[ -n "$has_main" && -n "$has_master" ]]; then
+        echo "エラー: main と master が両方存在します。基準ブランチを明示してください。" >&2
+        return 1
+    fi
+
+    git fetch --prune || return 1
+
+    local default_branch
+    default_branch=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@')
+    if [[ -z "$default_branch" ]]; then
+        echo "エラー: origin/HEAD からデフォルトブランチを判定できません。" >&2
+        return 1
+    fi
+
+    git checkout "$default_branch" || return 1
+    git pull origin "$default_branch" || return 1
+
+    git branch --merged "$default_branch" \
+        | grep -v "^\*" \
+        | grep -v " $default_branch$" \
+        | xargs -r git branch -d
+}

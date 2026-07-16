@@ -1,0 +1,9 @@
+# connect0459 private directory
+**/.connect0459
+
+# system files
+**/.DS_Store
+
+# claude code
+**/CLAUDE.local.md
+**/.claude/settings.local.json
