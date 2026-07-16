@@ -15,13 +15,13 @@ This project is intended for public release. All of the following must be writte
 
 This is a personal dotfiles repository. It manages real shell rc files (`.bashrc`, `.bash_profile`, `.bash_aliases`, `.config/git/ignore`, etc.) directly under real file names — no GNU Stow or chezmoi. There is currently no install/bootstrap script; see the root `README.md` for the actual file inventory.
 
-`sync/` hosts a shell port of the sync tool from `connect-labo/dev-settings/coding-agents/sync-cmd` (originally uv/Python). `coding-agents/` is the canonical source content it distributes — `AGENTS.md`, `agent-docs/**`, and `dot-claude/settings.json`, consolidated here from `connect-labo/dev-settings/coding-agents` — and `sync/sync.sh` writes it into the real `$HOME` (`~/.connect0459/coding-agents/`, symlinked from `~/.claude/CLAUDE.md` and `~/.github/copilot-instructions.md`, plus a permissions merge into `~/.claude/settings.json`). See `sync/README.md` and `coding-agents/README.md` for details.
+`sync/` hosts a shell sync tool, and `coding-agents/` is the canonical source content it distributes — `AGENTS.md`, `agent-docs/**`, and `dot-claude/settings.json`. `sync/sync.sh` writes this into the real `$HOME` (`~/.connect0459/coding-agents/`, symlinked from `~/.claude/CLAUDE.md` and `~/.github/copilot-instructions.md`, plus a permissions merge into `~/.claude/settings.json`). See `sync/README.md` and `coding-agents/README.md` for details.
 
 ## Conventions
 
 ### Directory naming
 
-- A directory or file gets the `dot-foo` prefix **only** when it is symlinked or physically copied 1:1 onto a real hidden path (e.g. `~/.foo`). This mirrors the existing convention in `connect-labo/dev-settings/coding-agents/dot-claude/`.
+- A directory or file gets the `dot-foo` prefix **only** when it is symlinked or physically copied 1:1 onto a real hidden path (e.g. `~/.foo`), as `coding-agents/dot-claude/` is.
 - Content that is not itself a hidden-path target (tooling, documentation, source scripts) uses a plain name — do not prefix it with `dot-`.
 
 ### Shell scripts

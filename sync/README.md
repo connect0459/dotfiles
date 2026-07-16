@@ -1,6 +1,6 @@
 # sync
 
-A port of the sync logic from `connect-labo/dev-settings/coding-agents/sync-cmd` (originally uv/Python) to shell, in order to minimize the dependency footprint.
+A port of a sync tool originally implemented in Python/uv, to shell, in order to minimize the dependency footprint.
 
 ## Scope
 

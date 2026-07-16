@@ -1,8 +1,7 @@
 # coding-agents
 
 Source content that `sync/sync.sh` distributes to `$HOME`. This directory is the
-canonical copy — it used to live only in `connect-labo/dev-settings/coding-agents`;
-that copy is now considered downstream of this one.
+canonical copy.
 
 - `AGENTS.md` — synced to `~/.connect0459/coding-agents/AGENTS.md`, then
   symlinked from `~/.claude/CLAUDE.md` and `~/.github/copilot-instructions.md`.
