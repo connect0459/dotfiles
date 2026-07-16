@@ -283,11 +283,7 @@ func NewOrder(id, userID string, items []OrderItem) (Order, error) {
 // TotalAmount は注文の合計金額を計算する
 // ビジネスルール: 10000円以上の場合は送料無料
 func (o Order) TotalAmount() Money {
-    var total Money
-    for _, item := range o.items {
-        itemTotal := item.price.Multiply(float64(item.quantity))
-        total, _ = total.Add(itemTotal)
-    }
+    total := o.subtotal()
 
     // 送料計算
     if !o.isFreeShipping() {
@@ -306,9 +302,10 @@ func (o Order) isFreeShipping() bool {
 }
 
 // subtotal は商品小計を計算する
+// NewOrder が items の非空を保証しているため、先頭要素から積算を開始できる
 func (o Order) subtotal() Money {
-    var total Money
-    for _, item := range o.items {
+    total := o.items[0].price.Multiply(float64(o.items[0].quantity))
+    for _, item := range o.items[1:] {
         itemTotal := item.price.Multiply(float64(item.quantity))
         total, _ = total.Add(itemTotal)
     }
