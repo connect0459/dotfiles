@@ -1,28 +1,38 @@
 # sync
 
-A port of the sync logic from `connect-labo/dev-settings/coding-agents/sync-cmd` (originally uv/Python) to shell, in order to minimize the dependency footprint.
+A shell tool that distributes the agent-config content in `../coding-agents/` into the real `$HOME`, with no runtime dependency beyond what macOS ships plus `jq`.
 
-## Current scope (skeleton stage)
+## Scope
 
-`lib/*.sh` implements functions that map one-to-one to the original Python modules (`checksum.py` `symlink.py` `dirsync.py` `permissions.py` `term.py`), and `test/*.bats` verifies behavior equivalent to the original `tests/test_*.py`.
+`lib/*.sh` implements the individual filesystem primitives this needs — content checksums, symlink setup, directory sync, and a JSON permissions merge — each covered by `test/*.bats`.
 
-The following are intentionally out of scope for now:
+`sync.sh` is the orchestration entry point. It reads from `../coding-agents/` (this repo's canonical copy of `AGENTS.md`, `agent-docs/**`, and `dot-claude/settings.json` — see `../coding-agents/README.md`) and writes to the real `$HOME`:
 
-- Writing to the real `$HOME` (`~/.claude` `~/.github` `~/.connect0459`)
-- Wiring up the actual content from `connect-labo` (`AGENTS.md` `agent-docs/` `dot-claude/settings.json`)
-- The orchestration behavior from the original `main.py` (e.g. the Change Detection Report)
+- Copies `AGENTS.md` and syncs `agent-docs/` into `~/.connect0459/coding-agents/`
+- Merges `dot-claude/settings.json`'s top-level keys into `~/.claude/settings.json` (skipped if the source file doesn't exist)
+- Sets up `~/.claude/CLAUDE.md` and `~/.github/copilot-instructions.md` as symlinks to the central `AGENTS.md`
+- Prints a Change Detection Report of what changed
 
-These will be tackled separately, by agreement, once the fixture-only skeleton has proven stable.
+Run it with:
 
-## Module mapping
+```sh
+sync/sync.sh
+```
 
-| lib | original module | notes |
-| --- | --- | --- |
-| `checksum.sh` | `checksum.py` | Ported for equality/inequality behavior only; exact hash values are not required to match |
-| `symlink.sh` | `symlink.py` | |
-| `dirsync.sh` | `dirsync.py` | |
-| `permissions.sh` | `permissions.py` | Despite the name, performs a shallow merge of every top-level key from source, not just `permissions` (behavior asserted by `test_permissions.py`). The original repo's README describes this inaccurately. |
-| `term.sh` | `term.py` | `TERM_FORCE_COLOR=1` overrides the tty check (for tests) |
+`SYNC_SOURCE_DIR` overrides the source directory (used by `test/sync.bats` so tests never touch the real `$HOME` or read from the real source).
+
+One quirk worth knowing: the report's symlink rows are driven by whether the symlink exists, not by whether it actually changed — so they always show as changed once the symlinks are set up, even on a no-op run.
+
+## Modules
+
+| lib | responsibility |
+| --- | --- |
+| `checksum.sh` | Computes a content digest for a file or directory tree. The digest is an internal implementation detail — only equality/inequality between two digests is meaningful, never the literal value. |
+| `symlink.sh` | Sets up `link` as a symlink to `target`, refusing to replace an existing real directory. Backs up a pre-existing real file to `<link>.bak` before replacing it with a symlink, since this runs against the real `$HOME`. |
+| `dirsync.sh` | Syncs a directory tree from `src` to `dst`: copies everything in `src`, and removes anything in `dst` that `src` no longer has (including directories left empty as a result), so `dst` always ends up mirroring `src` exactly. |
+| `permissions.sh` | Merges every top-level key from a source JSON file into a target JSON file (source wins on conflicts) — despite the name, not limited to a `permissions` key. Nested objects are merged recursively rather than replaced outright, and `permissions.allow`/`deny`/`ask` are additionally unioned (deduped, sorted) — see the comment in `permissions.sh` for the tradeoff this accepts. |
+| `term.sh` | Wraps text in ANSI color codes when stdout is a tty (or `TERM_FORCE_COLOR=1` is set, for tests); passes text through unchanged otherwise. |
+| `sync.sh` | Orchestration; see Scope above. |
 
 ## Dependencies
 
@@ -35,5 +45,5 @@ These will be tackled separately, by agreement, once the fixture-only skeleton h
 
 ```sh
 bats sync/test/*.bats
-shellcheck sync/lib/*.sh
+shellcheck sync/lib/*.sh sync/sync.sh
 ```

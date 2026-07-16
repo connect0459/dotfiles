@@ -40,6 +40,26 @@ teardown() {
   [ "$(cat "$TMP/link.txt")" = "target content" ]
 }
 
+@test "symlink_setup backs up an existing real file before replacing it" {
+  printf 'target content' > "$TMP/target.txt"
+  printf 'original content' > "$TMP/link.txt"
+
+  symlink_setup "$TMP/target.txt" "$TMP/link.txt"
+
+  [ -f "$TMP/link.txt.bak" ]
+  [ "$(cat "$TMP/link.txt.bak")" = "original content" ]
+}
+
+@test "symlink_setup does not create a backup when replacing an existing symlink" {
+  printf 'old' > "$TMP/old.txt"
+  printf 'new' > "$TMP/new.txt"
+  ln -s "$TMP/old.txt" "$TMP/link.txt"
+
+  symlink_setup "$TMP/new.txt" "$TMP/link.txt"
+
+  [ ! -e "$TMP/link.txt.bak" ]
+}
+
 @test "symlink_setup refuses to replace an existing real directory" {
   printf 'target content' > "$TMP/target.txt"
   mkdir -p "$TMP/link.txt"
