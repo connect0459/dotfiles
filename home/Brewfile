@@ -1,0 +1,4 @@
+brew "bash"
+brew "jq"
+brew "shellcheck"
+brew "bats-core"
