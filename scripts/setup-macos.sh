@@ -25,7 +25,7 @@ else
   exit 1
 fi
 
-HOMEBREW_BASH="/opt/homebrew/bin/bash"
+HOMEBREW_BASH="$(brew --prefix)/bin/bash"
 if [ -x "$HOMEBREW_BASH" ] && [ "$SHELL" != "$HOMEBREW_BASH" ]; then
   pln
   pln "$(term_bold 'Homebrew bash installed.')"

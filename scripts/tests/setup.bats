@@ -6,6 +6,7 @@ setup() {
   SETUP_SH="$SCRIPTS_DIR/setup.sh"
   TMP="$(mktemp -d)"
   export HOME="$TMP/home"
+  export SETUP_MACOS_DRY_RUN=1
   mkdir -p "$HOME"
 }
 

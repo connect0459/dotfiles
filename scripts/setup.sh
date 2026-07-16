@@ -11,7 +11,7 @@ OS="$(uname -s)"
 case "$OS" in
   Darwin)
     if [ -x "$SCRIPT_DIR/setup-macos.sh" ]; then
-      "$SCRIPT_DIR/setup-macos.sh"
+      "$SCRIPT_DIR/setup-macos.sh" || exit 1
     fi
     ;;
 esac
