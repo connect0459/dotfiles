@@ -49,14 +49,12 @@ without this information.
 ## Test Items
 
 - Describe any test considerations beyond the automated bats suite.
-- Note whether `bats scripts/sync-agents/tests/*.bats scripts/tests/*.bats` and `shellcheck scripts/sync-agents/libs/*.sh scripts/sync-agents/sync-agents.sh scripts/setup.sh` were run locally.
 
 ## [Required] Quality Checklist
 
 **Please check all items before merging.**
 
-- [ ] **Shell Tests**: `bats scripts/sync-agents/tests/*.bats scripts/tests/*.bats` passes
-- [ ] **Lint**: `shellcheck scripts/sync-agents/libs/*.sh scripts/sync-agents/sync-agents.sh scripts/setup.sh` reports no warnings
-- [ ] **Docs in sync**: `AGENTS.md` / `scripts/sync-agents/README.md` reflect the actual current scope
+- [ ] **Verify**: `just verify` (lint + test) passes
+- [ ] **Docs in sync**: `README.md` / `AGENTS.md` reflect the actual current scope
 
 > **Important**: This checklist ensures quality. Please verify all items before requesting review.
