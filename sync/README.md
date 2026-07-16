@@ -28,9 +28,9 @@ One faithfully-ported quirk from the original `main.py`: the report's symlink ro
 | lib | original module | notes |
 | --- | --- | --- |
 | `checksum.sh` | `checksum.py` | Ported for equality/inequality behavior only; exact hash values are not required to match |
-| `symlink.sh` | `symlink.py` | |
+| `symlink.sh` | `symlink.py` | Diverges from the original: backs up a pre-existing real file to `<link>.bak` before replacing it with a symlink, since this is wired up against the real `$HOME` |
 | `dirsync.sh` | `dirsync.py` | |
-| `permissions.sh` | `permissions.py` | Despite the name, merges every top-level key from source into target, not just `permissions`. Diverges from the original: `permissions.allow`/`deny`/`ask` are unioned (deduped, sorted) rather than replaced outright, so a locally-added permission entry survives a sync where source doesn't mention it — see the comment in `permissions.sh` for the tradeoff this accepts. |
+| `permissions.sh` | `permissions.py` | Despite the name, merges every top-level key from source into target, not just `permissions`. Diverges from the original: nested objects are merged recursively rather than replaced outright, and `permissions.allow`/`deny`/`ask` are unioned (deduped, sorted) on top of that, so a locally-added entry survives a sync where source doesn't mention it — see the comment in `permissions.sh` for the tradeoff this accepts. |
 | `term.sh` | `term.py` | `TERM_FORCE_COLOR=1` overrides the tty check (for tests) |
 | `sync.sh` | `main.py` | Orchestration; see Scope above |
 
