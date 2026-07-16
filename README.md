@@ -13,11 +13,13 @@ Clone this repo anywhere, then run:
 ./scripts/setup.sh
 ```
 
-This symlinks `home/.bashrc`, `home/.bash_profile`, `home/.bash_aliases`, and
-`home/dot_config/git/ignore` into `$HOME` (as `.bashrc`, `.bash_profile`,
-`.bash_aliases`, and `.config/git/ignore`, backing up any pre-existing real file to
-`<file>.bak` first), then delegates to `scripts/sync-agents/sync-agents.sh` for the
-coding-agent config distribution described below. Safe to re-run.
+This runs `scripts/setup-common.sh` (which symlinks `home/.bashrc`, `home/.bash_profile`,
+`home/.bash_aliases`, and `home/dot_config/git/ignore` into `$HOME` as `.bashrc`,
+`.bash_profile`, `.bash_aliases`, and `.config/git/ignore`, backing up any pre-existing
+real file to `<file>.bak` first, then delegates to `scripts/sync-agents/sync-agents.sh`
+for the coding-agent config distribution described below), and then runs a
+platform-specific setup script if applicable (e.g. `scripts/setup-macos.sh` on macOS to
+install dependencies from `home/Brewfile`). Safe to re-run.
 
 ## Usage
 
