@@ -74,6 +74,29 @@ teardown() {
   [ "$status" -ne 0 ]
 }
 
+@test "dirsync_sync replaces a dst file with a directory when src's entry changed type" {
+  mkdir -p "$SRC/foo" "$DST"
+  printf 'old file content' > "$DST/foo"
+  printf 'nested' > "$SRC/foo/nested.txt"
+
+  dirsync_sync "$SRC" "$DST"
+
+  [ -d "$DST/foo" ]
+  [ "$(cat "$DST/foo/nested.txt")" = "nested" ]
+}
+
+@test "dirsync_sync replaces a dst directory with a file when src's entry changed type" {
+  mkdir -p "$SRC" "$DST/foo"
+  printf 'old nested' > "$DST/foo/nested.txt"
+  printf 'now a file' > "$SRC/foo"
+
+  dirsync_sync "$SRC" "$DST"
+
+  [ -f "$DST/foo" ]
+  [ ! -d "$DST/foo" ]
+  [ "$(cat "$DST/foo")" = "now a file" ]
+}
+
 @test "dirsync_copy_file creates dst dir and copies content" {
   printf 'hello' > "$TMP/src.txt"
 

@@ -24,7 +24,7 @@ _dirsync_delete_extra_files() {
   local src="$1" dst="$2"
   local rel
   (cd "$dst" && find . -type f | sed 's|^\./||') | while IFS= read -r rel; do
-    if [ ! -e "$src/$rel" ]; then
+    if [ ! -f "$src/$rel" ]; then
       rm -f "$dst/$rel"
     fi
   done
