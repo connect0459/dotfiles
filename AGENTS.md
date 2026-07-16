@@ -28,7 +28,7 @@ This is a personal dotfiles repository. It manages real shell rc files (`.bashrc
 
 - Target bash 3.2 compatibility (macOS's stock `/bin/bash`) — no bash 4+ features (associative arrays, `mapfile`, etc.).
 - Every script under `lib/` must pass `shellcheck` with no warnings.
-- Prefer POSIX/portable tools already present on macOS (`find`, `shasum`, `awk`) over adding new runtime dependencies. Add a new dependency (e.g. `jq`) only when the task genuinely requires it (YAGNI).
+- Prefer POSIX/portable tools already present on macOS (`find`, `shasum`, `awk`) over adding new runtime dependencies. `jq` is the one accepted exception, used by `permissions.sh` for JSON merging — no reasonable POSIX-only equivalent exists for that job. Don't introduce further runtime dependencies without the same bar (YAGNI).
 
 ### Testing
 
@@ -38,4 +38,4 @@ This is a personal dotfiles repository. It manages real shell rc files (`.bashrc
 ### Git
 
 - Conventional Commits in English.
-- Branch naming: `feature/xxx`, `fix/xxx`, `docs/xxx`.
+- Branch naming: `feat/xxx`, `fix/xxx`, `docs/xxx`, `chore/xxx` — matching the Conventional Commits type used in the branch's commits.
