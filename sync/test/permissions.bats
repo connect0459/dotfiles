@@ -84,6 +84,25 @@ teardown() {
   [ "$(jq 'has("extraKnownMarketplaces")' "$TMP/target.json")" = "true" ]
 }
 
+@test "merge preserves a target-only key nested under a shared top-level object" {
+  printf '{"enabledPlugins": {"cc-plugin@connect0459": true}}' > "$TMP/source.json"
+  printf '{"enabledPlugins": {"cc-plugin@connect0459": true, "my-local-plugin@me": true}}' > "$TMP/target.json"
+
+  permissions_merge "$TMP/source.json" "$TMP/target.json"
+
+  [ "$(jq '.enabledPlugins | has("my-local-plugin@me")' "$TMP/target.json")" = "true" ]
+}
+
+@test "merge does not inject empty deny/ask arrays when neither side defines them" {
+  printf '{"permissions": {"allow": ["read"]}}' > "$TMP/source.json"
+  printf '{}' > "$TMP/target.json"
+
+  permissions_merge "$TMP/source.json" "$TMP/target.json"
+
+  [ "$(jq '.permissions | has("deny")' "$TMP/target.json")" = "false" ]
+  [ "$(jq '.permissions | has("ask")' "$TMP/target.json")" = "false" ]
+}
+
 @test "merge does not add permissions when source has none" {
   printf '{"other": "value"}' > "$TMP/source.json"
   printf '{}' > "$TMP/target.json"

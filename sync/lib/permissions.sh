@@ -4,14 +4,19 @@
 #
 # Every top-level key in source is merged into target (source wins on
 # conflicts, target-only keys are preserved) -- despite the module name, this
-# is not a filter limited to the "permissions" key.
+# is not a filter limited to the "permissions" key. Nested objects (e.g.
+# enabledPlugins, extraKnownMarketplaces) are merged recursively rather than
+# replaced outright, so a target-only sub-key a user added locally is never
+# silently dropped just because source also defines that same top-level key.
 #
-# permissions.allow/deny/ask are the exception: they are unioned (deduped,
-# sorted) rather than replaced outright, so permission entries a user added
-# locally -- e.g. via `/permissions add`, never present in source -- survive
-# a sync instead of being silently dropped. The tradeoff this accepts: an
-# entry that source used to distribute and later removes will keep lingering
-# in target, since a plain union can only add, never retract.
+# permissions.allow/deny/ask specifically are unioned (deduped, sorted)
+# rather than merged as plain objects, since they are arrays: a user's
+# locally-added permission entry -- e.g. via `/permissions add`, never
+# present in source -- survives a sync instead of being silently dropped.
+# The tradeoff this accepts: an entry that source used to distribute and
+# later removes will keep lingering in target, since a plain union can only
+# add, never retract. An allow/deny/ask key absent from both sides is left
+# absent rather than materialized as an empty array.
 
 permissions_merge() {
   local source_path="$1" target_path="$2"
@@ -30,20 +35,26 @@ permissions_merge() {
   fi
 
   if ! jq -S --indent 2 -n --slurpfile t "$target_tmp" --slurpfile s "$source_path" '
-    ($t[0].permissions) as $tp
+    ($t[0] * $s[0]) as $merged
+    | ($t[0].permissions) as $tp
     | ($s[0].permissions) as $sp
-    | ($t[0] + $s[0]) as $shallow
     | if ($tp == null) and ($sp == null) then
-        $shallow
+        $merged
       else
         ($tp // {}) as $tpv
         | ($sp // {}) as $spv
-        | $shallow
+        | $merged
         | .permissions = (
-            ($tpv * $spv)
-            | .allow = ((($tpv.allow // []) + ($spv.allow // [])) | unique)
-            | .deny  = ((($tpv.deny  // []) + ($spv.deny  // [])) | unique)
-            | .ask   = ((($tpv.ask   // []) + ($spv.ask   // [])) | unique)
+            .permissions
+            | if ($tpv.allow == null) and ($spv.allow == null) then . else
+                .allow = ((($tpv.allow // []) + ($spv.allow // [])) | unique)
+              end
+            | if ($tpv.deny == null) and ($spv.deny == null) then . else
+                .deny = ((($tpv.deny // []) + ($spv.deny // [])) | unique)
+              end
+            | if ($tpv.ask == null) and ($spv.ask == null) then . else
+                .ask = ((($tpv.ask // []) + ($spv.ask // [])) | unique)
+              end
           )
       end
   ' > "${target_path}.tmp" 2>/dev/null; then
