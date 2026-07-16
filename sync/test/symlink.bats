@@ -39,3 +39,16 @@ teardown() {
   [ -L "$TMP/link.txt" ]
   [ "$(cat "$TMP/link.txt")" = "target content" ]
 }
+
+@test "symlink_setup refuses to replace an existing real directory" {
+  printf 'target content' > "$TMP/target.txt"
+  mkdir -p "$TMP/link.txt"
+  printf 'old content' > "$TMP/link.txt/old.txt"
+
+  run symlink_setup "$TMP/target.txt" "$TMP/link.txt"
+
+  [ "$status" -ne 0 ]
+  [ -d "$TMP/link.txt" ]
+  [ ! -L "$TMP/link.txt" ]
+  [ -f "$TMP/link.txt/old.txt" ]
+}
