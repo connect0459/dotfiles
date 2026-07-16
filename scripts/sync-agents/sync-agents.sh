@@ -22,6 +22,16 @@ _repeat() {
   printf '%s' "$out"
 }
 
+# printf's own '%-*s' field-width padding counts bytes, not characters, so it
+# under-pads multi-byte UTF-8 strings (e.g. "✓") even though bash's ${#s} counts
+# characters correctly. Pad manually with ${#s} instead of relying on printf.
+_pad_right() {
+  local s="$1" width="$2" pad
+  pad=$((width - ${#s}))
+  [ "$pad" -lt 0 ] && pad=0
+  printf '%s%s' "$s" "$(_repeat ' ' "$pad")"
+}
+
 SOURCE_DIR="${SYNC_SOURCE_DIR:-$(cd "$SCRIPT_DIR/../.." && pwd)/home}"
 CENTRAL_DIR="$HOME/.agents"
 CLAUDE_DIR="$HOME/.claude"
@@ -155,12 +165,12 @@ _sep_line() {
 }
 
 pln "$(term_dim "$(_sep_line '┌' '┬' '┐')")"
-printf '│ %-*s │ %-*s │ %-*s │\n' "$w0" "Status" "$w1" "Type" "$w2" "Name"
+printf '│ %s │ %s │ %s │\n' "$(_pad_right "Status" "$w0")" "$(_pad_right "Type" "$w1")" "$(_pad_right "Name" "$w2")"
 pln "$(term_dim "$(_sep_line '├' '┼' '┤')")"
 
 i=0
 while [ "$i" -lt "${#row_status[@]}" ]; do
-  line="$(printf '│ %-*s │ %-*s │ %-*s │' "$w0" "${row_status[$i]}" "$w1" "${row_type[$i]}" "$w2" "${row_name[$i]}")"
+  line="$(printf '│ %s │ %s │ %s │' "$(_pad_right "${row_status[$i]}" "$w0")" "$(_pad_right "${row_type[$i]}" "$w1")" "$(_pad_right "${row_name[$i]}" "$w2")")"
   if [ "${row_changed[$i]}" -eq 1 ]; then
     pln "$(term_green "$line")"
   else

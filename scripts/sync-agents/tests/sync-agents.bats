@@ -84,6 +84,37 @@ teardown() {
   [[ "$output" == *"Changes were applied successfully"* ]]
 }
 
+@test "sync aligns Change Detection Report borders across changed (✓) and unchanged (-) rows" {
+  "$SYNC_SH" >/dev/null
+
+  # Second run: docs rows are unchanged ("-"), symlink rows still report as
+  # changed ("✓"), giving a report with both row kinds to compare.
+  run "$SYNC_SH"
+  [ "$status" -eq 0 ]
+
+  local top_border header_row changed_row unchanged_row bottom_border
+  top_border="$(printf '%s\n' "$output" | grep '^┌')"
+  header_row="$(printf '%s\n' "$output" | grep '^│ Status')"
+  changed_row="$(printf '%s\n' "$output" | grep '^│ ✓' | head -n 1)"
+  unchanged_row="$(printf '%s\n' "$output" | grep '^│ -' | head -n 1)"
+  bottom_border="$(printf '%s\n' "$output" | grep '^└')"
+
+  [ -n "$top_border" ]
+  [ -n "$header_row" ]
+  [ -n "$changed_row" ]
+  [ -n "$unchanged_row" ]
+  [ -n "$bottom_border" ]
+
+  # printf '%-*s' pads by byte count, not character count, so a row
+  # containing the multi-byte "✓" used to come out narrower than the header
+  # and border lines. ${#line} counts characters correctly here, so equal
+  # lengths mean the box-drawing borders actually line up.
+  [ "${#changed_row}" -eq "${#header_row}" ]
+  [ "${#unchanged_row}" -eq "${#header_row}" ]
+  [ "${#top_border}" -eq "${#header_row}" ]
+  [ "${#bottom_border}" -eq "${#header_row}" ]
+}
+
 @test "sync fails when source AGENTS.md is missing" {
   rm -f "$SOURCE/dot_agents/AGENTS.md"
   run "$SYNC_SH"
