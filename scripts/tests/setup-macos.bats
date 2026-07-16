@@ -31,3 +31,12 @@ teardown() {
   run "$SETUP_MACOS_SH"
   [ "$status" -eq 0 ]
 }
+
+@test "setup-macos.sh displays instructions for setting login shell" {
+  if ! command -v brew &> /dev/null; then
+    skip "brew not installed"
+  fi
+
+  run "$SETUP_MACOS_SH"
+  [ "$status" -eq 0 ]
+}

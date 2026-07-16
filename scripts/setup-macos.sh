@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# macOS-specific setup: installs dependencies from Brewfile.
+# macOS-specific setup: installs dependencies from Brewfile and configures bash.
 # Safe to re-run.
 
 # shellcheck disable=SC1091
@@ -19,4 +19,13 @@ if [ -f "$REPO_DIR/home/Brewfile" ]; then
 else
   pln "$(term_red 'Brewfile not found at' "$REPO_DIR/home/Brewfile")" >&2
   exit 1
+fi
+
+HOMEBREW_BASH="/opt/homebrew/bin/bash"
+if [ -x "$HOMEBREW_BASH" ] && [ "$SHELL" != "$HOMEBREW_BASH" ]; then
+  pln
+  pln "$(term_bold 'Homebrew bash installed.')"
+  pln "$(term_cyan 'To set it as your login shell, run:')"
+  pln "  echo $HOMEBREW_BASH | sudo tee -a /etc/shells"
+  pln "  chsh -s $HOMEBREW_BASH"
 fi
