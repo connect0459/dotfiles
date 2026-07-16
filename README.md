@@ -45,6 +45,20 @@ run its tests.
 intentionally: they are the user's personal instruction content for coding agents,
 not project documentation, so the English-only convention below does not apply to them.
 
+## Development
+
+After setup, develop this repository with:
+
+```sh
+just lint    # shellcheck all shell scripts
+just test    # run all bats tests
+just verify  # lint + test (CI gate)
+```
+
+See `justfile` for recipes. This is development tooling for the repository itself;
+setup (`scripts/setup.sh`) is distribution infrastructure for users, and requires no
+development dependencies.
+
 ## Conventions
 
 See `AGENTS.md` for this repo's directory-naming, shell-scripting, and testing
