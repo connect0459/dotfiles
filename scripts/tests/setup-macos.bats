@@ -7,7 +7,9 @@ setup() {
   TMP="$(mktemp -d)"
   export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
   export HOME="$TMP/home"
-  export SETUP_DRY_RUN=1
+  # Skips only the Brewfile install, so tests can exercise real symlinking
+  # without SETUP_DRY_RUN also suppressing it.
+  export SETUP_SKIP_NETWORK_INSTALLS=1
   mkdir -p "$HOME"
 }
 
@@ -16,17 +18,20 @@ teardown() {
 }
 
 @test "setup-macos.sh succeeds in dry-run mode" {
+  export SETUP_DRY_RUN=1
   run "$SETUP_MACOS_SH"
   [ "$status" -eq 0 ]
 }
 
 @test "setup-macos.sh reports dry-run when SETUP_DRY_RUN is set" {
+  export SETUP_DRY_RUN=1
   run "$SETUP_MACOS_SH"
   [ "$status" -eq 0 ]
   [[ "$output" == *"[DRY RUN]"* ]]
 }
 
 @test "setup-macos.sh reports the Brewfile path in the dry-run message" {
+  export SETUP_DRY_RUN=1
   run "$SETUP_MACOS_SH"
   [ "$status" -eq 0 ]
   [[ "$output" == *"Would install from $REPO_DIR/home/Brewfile"* ]]
@@ -48,4 +53,12 @@ teardown() {
   [ "$status" -eq 0 ]
   [ -L "$HOME/Library/Application Support/Code/User/settings.json" ]
   [ "$(readlink "$HOME/Library/Application Support/Code/User/settings.json")" = "$REPO_DIR/home/dot_config/Code/User/settings.json" ]
+}
+
+@test "setup-macos.sh prints a dry-run message for VS Code settings.json and does not create it when SETUP_DRY_RUN is set" {
+  export SETUP_DRY_RUN=1
+  run "$SETUP_MACOS_SH"
+  [ "$status" -eq 0 ]
+  [ ! -e "$HOME/Library/Application Support/Code/User/settings.json" ]
+  [[ "$output" == *"[DRY RUN] Would symlink $HOME/Library/Application Support/Code/User/settings.json -> $REPO_DIR/home/dot_config/Code/User/settings.json"* ]]
 }

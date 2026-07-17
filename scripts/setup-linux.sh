@@ -10,9 +10,6 @@ source "$SCRIPT_DIR/libs/term.sh"
 pln "$(term_bold 'Symlinking VS Code user settings')"
 
 VSCODE_SETTINGS_LINK="$HOME/.config/Code/User/settings.json"
-mkdir -p "$(dirname "$VSCODE_SETTINGS_LINK")"
-if ! symlink_setup "$REPO_DIR/home/dot_config/Code/User/settings.json" "$VSCODE_SETTINGS_LINK"; then
-  pln "$(term_red 'failed to symlink VS Code settings.json')" >&2
+if ! symlink_setup_reporting "$REPO_DIR/home/dot_config/Code/User/settings.json" "$VSCODE_SETTINGS_LINK"; then
   exit 1
 fi
-echo "  $VSCODE_SETTINGS_LINK -> $REPO_DIR/home/dot_config/Code/User/settings.json"

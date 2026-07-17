@@ -16,7 +16,10 @@ fi
 if [ -f "$REPO_DIR/home/Brewfile" ]; then
   pln "$(term_bold 'Installing macOS dependencies from Brewfile')"
 
-  if [ -n "$SETUP_DRY_RUN" ]; then
+  # SETUP_SKIP_NETWORK_INSTALLS is a test-only escape hatch: unlike
+  # SETUP_DRY_RUN, it skips only this install, letting tests exercise real
+  # symlinking without also hitting the network.
+  if [ -n "$SETUP_DRY_RUN" ] || [ -n "$SETUP_SKIP_NETWORK_INSTALLS" ]; then
     pln "$(term_cyan '[DRY RUN] Would install from' "$REPO_DIR/home/Brewfile")"
   else
     brew bundle install --file="$REPO_DIR/home/Brewfile"
@@ -30,12 +33,9 @@ echo
 pln "$(term_bold 'Symlinking VS Code user settings')"
 
 VSCODE_SETTINGS_LINK="$HOME/Library/Application Support/Code/User/settings.json"
-mkdir -p "$(dirname "$VSCODE_SETTINGS_LINK")"
-if ! symlink_setup "$REPO_DIR/home/dot_config/Code/User/settings.json" "$VSCODE_SETTINGS_LINK"; then
-  pln "$(term_red 'failed to symlink VS Code settings.json')" >&2
+if ! symlink_setup_reporting "$REPO_DIR/home/dot_config/Code/User/settings.json" "$VSCODE_SETTINGS_LINK"; then
   exit 1
 fi
-echo "  $VSCODE_SETTINGS_LINK -> $REPO_DIR/home/dot_config/Code/User/settings.json"
 
 HOMEBREW_BASH="$(brew --prefix)/bin/bash"
 if [ -x "$HOMEBREW_BASH" ] && [ "$SHELL" != "$HOMEBREW_BASH" ]; then

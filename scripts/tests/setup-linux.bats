@@ -42,3 +42,11 @@ teardown() {
   [ -L "$HOME/.config/Code/User/settings.json" ]
   [ ! -e "$HOME/.config/Code/User/settings.json.bak" ]
 }
+
+@test "setup-linux.sh prints a dry-run message and does not create the symlink when SETUP_DRY_RUN is set" {
+  export SETUP_DRY_RUN=1
+  run "$SETUP_LINUX_SH"
+  [ "$status" -eq 0 ]
+  [ ! -e "$HOME/.config/Code/User/settings.json" ]
+  [[ "$output" == *"[DRY RUN] Would symlink $HOME/.config/Code/User/settings.json -> $REPO_DIR/home/dot_config/Code/User/settings.json"* ]]
+}
