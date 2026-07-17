@@ -6,7 +6,9 @@ setup() {
   SETUP_SH="$SCRIPTS_DIR/setup.sh"
   TMP="$(mktemp -d)"
   export HOME="$TMP/home"
-  export SETUP_DRY_RUN=1
+  # Skips only the network-fetching installs, so tests can exercise real
+  # symlinking without SETUP_DRY_RUN also suppressing it.
+  export SETUP_SKIP_NETWORK_INSTALLS=1
   mkdir -p "$HOME"
 }
 
@@ -61,6 +63,10 @@ teardown() {
 }
 
 @test "setup.sh symlinks VS Code settings.json into HOME on macOS" {
+  if [ "$(uname -s)" != "Darwin" ]; then
+    skip "macOS only — setup.sh delegates to setup-linux.sh on this platform"
+  fi
+
   run "$SETUP_SH"
   [ "$status" -eq 0 ]
   [ -L "$HOME/Library/Application Support/Code/User/settings.json" ]
