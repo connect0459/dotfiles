@@ -19,20 +19,21 @@ term_enabled() {
 }
 
 term_wrap() {
-  local code="$1" s="$2"
+  local code="$1"
+  shift
   if term_enabled; then
-    printf '\033[%sm%s\033[0m' "$code" "$s"
+    printf '\033[%sm%s\033[0m' "$code" "$*"
   else
-    printf '%s' "$s"
+    printf '%s' "$*"
   fi
 }
 
-term_bold()       { term_wrap "1" "$1"; }
-term_dim()        { term_wrap "2" "$1"; }
-term_red()        { term_wrap "31" "$1"; }
-term_green()      { term_wrap "32" "$1"; }
-term_cyan()       { term_wrap "36" "$1"; }
-term_bold_green() { term_wrap "1;32" "$1"; }
+term_bold()       { term_wrap "1" "$@"; }
+term_dim()        { term_wrap "2" "$@"; }
+term_red()        { term_wrap "31" "$@"; }
+term_green()      { term_wrap "32" "$@"; }
+term_cyan()       { term_wrap "36" "$@"; }
+term_bold_green() { term_wrap "1;32" "$@"; }
 
 pln() {
   printf '%s\n' "$1"
