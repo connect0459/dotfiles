@@ -4,6 +4,8 @@
 # platform-specific setup script if applicable. Safe to re-run.
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# shellcheck disable=SC1091
+source "$SCRIPT_DIR/sync-agents/libs/term.sh"
 
 "$SCRIPT_DIR/setup-common.sh" || exit 1
 
@@ -15,3 +17,8 @@ case "$OS" in
     fi
     ;;
 esac
+
+echo
+pln "$(term_bold_green 'Setup complete!')"
+pln "$(term_cyan 'To load the new shell configuration in this terminal, run:')"
+pln "  source ~/.bash_profile"
