@@ -26,6 +26,12 @@ teardown() {
   [[ "$output" == *"[DRY RUN]"* ]]
 }
 
+@test "setup-macos.sh reports the Brewfile path in the dry-run message" {
+  run "$SETUP_MACOS_SH"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Would install from $REPO_DIR/home/Brewfile"* ]]
+}
+
 @test "setup-macos.sh displays instructions for setting login shell when bash is installed" {
   if ! command -v brew &> /dev/null; then
     skip "brew not installed"
