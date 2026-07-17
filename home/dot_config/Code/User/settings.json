@@ -167,9 +167,7 @@
   "markdown.marp.html": "all",
   // Markdown PDF設定
   "markdown-pdf.includeDefaultStyles": false,
-  "markdown-pdf.styles": [
-    // "C:/Users/nakao/workspace/styles/github-markdown-5.6.1-custom.css"
-  ],
+  "markdown-pdf.styles": [],
   "markdown-pdf.mermaidServer": "https://unpkg.com/mermaid@10.4.0/dist/mermaid.min.js",
   // Markdownlint設定
   "markdownlint.config": {
