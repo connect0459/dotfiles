@@ -43,6 +43,16 @@ setup() {
   [ "$output" = $'\033[1mhello\033[0m' ]
 }
 
+@test "term_cyan joins multiple arguments with a space when stdout is not a tty" {
+  run term_cyan "hello" "world"
+  [ "$output" = "hello world" ]
+}
+
+@test "term_wrap joins multiple arguments with ANSI codes when forced on" {
+  TERM_FORCE_COLOR=1 run term_bold "hello" "world"
+  [ "$output" = $'\033[1mhello world\033[0m' ]
+}
+
 # term_wrap is always invoked as "$(term_xxx ...)", which puts fd 1 on a pipe
 # to the capture buffer rather than the real terminal — so a tty check made
 # lazily inside term_enabled/term_wrap would always read false, even when the

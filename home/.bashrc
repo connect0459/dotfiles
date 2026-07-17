@@ -11,6 +11,7 @@ export PATH="${PATH}:${HOME}/Library/Android/sdk/platform-tools"
 [ -f "/Users/akira/.ghcup/env" ] && . "/Users/akira/.ghcup/env" # ghcup-env
 
 # mise
+export PATH="$HOME/.local/bin:$PATH"
 eval "$(mise activate bash)"
 
 # moonbit

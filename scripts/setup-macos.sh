@@ -15,7 +15,7 @@ fi
 if [ -f "$REPO_DIR/home/Brewfile" ]; then
   pln "$(term_bold 'Installing macOS dependencies from Brewfile')"
 
-  if [ -n "$SETUP_MACOS_DRY_RUN" ]; then
+  if [ -n "$SETUP_DRY_RUN" ]; then
     pln "$(term_cyan '[DRY RUN] Would install from' "$REPO_DIR/home/Brewfile")"
   else
     brew bundle install --file="$REPO_DIR/home/Brewfile"
@@ -23,15 +23,6 @@ if [ -f "$REPO_DIR/home/Brewfile" ]; then
 else
   pln "$(term_red 'Brewfile not found at' "$REPO_DIR/home/Brewfile")" >&2
   exit 1
-fi
-
-pln
-pln "$(term_bold 'Installing mise-managed tools')"
-
-if [ -n "$SETUP_MACOS_DRY_RUN" ]; then
-  pln "$(term_cyan '[DRY RUN] Would install mise tools from' "$REPO_DIR/.mise.toml")"
-else
-  mise install -C "$REPO_DIR"
 fi
 
 HOMEBREW_BASH="$(brew --prefix)/bin/bash"
