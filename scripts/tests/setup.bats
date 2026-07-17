@@ -60,6 +60,12 @@ teardown() {
   [ -f "$HOME/.agents/AGENTS.md" ]
 }
 
+@test "setup.sh prints a reminder to reload the shell config after completing" {
+  run "$SETUP_SH"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"source ~/.bash_profile"* ]]
+}
+
 @test "setup.sh is safe to re-run" {
   run "$SETUP_SH"
   [ "$status" -eq 0 ]

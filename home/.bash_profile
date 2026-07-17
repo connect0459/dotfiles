@@ -1,6 +1,13 @@
 export BASH_SILENCE_DEPRECATION_WARNING=1
 
+# Load bashrc
+if [ -f ~/.bashrc ]; then
+    . ~/.bashrc
+fi
+
 . "$HOME/.local/bin/env"
+
+# cargo
 . "$HOME/.cargo/env"
 
 # Homebrew
@@ -34,8 +41,6 @@ if command -v colima &> /dev/null; then
         colima start
     fi
 fi
-
-[[ -f ~/.bashrc ]] && . ~/.bashrc
 
 export PATH="$HOME/bin:$PATH"
 

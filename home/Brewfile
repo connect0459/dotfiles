@@ -1,4 +1,4 @@
-tap "mutagen-io/mutagen"
+tap "mutagen-io/mutagen", trusted: true
 
 brew "actionlint"
 brew "aws-vault"
@@ -13,6 +13,7 @@ brew "gh"
 brew "go"
 brew "jq"
 brew "just"
+brew "libiconv"
 brew "mkcert"
 brew "mutagen-io/mutagen/mutagen"
 brew "mutagen-io/mutagen/mutagen-compose"

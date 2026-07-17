@@ -1,5 +1,5 @@
 # Git
-git-cleanup-merged() {
+git_cleanup() {
     local has_main has_master
 
     git show-ref --verify --quiet refs/heads/main && has_main=1
