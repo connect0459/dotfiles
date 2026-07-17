@@ -5,7 +5,7 @@
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 # shellcheck disable=SC1091
-source "$SCRIPT_DIR/sync-agents/libs/term.sh"
+source "$SCRIPT_DIR/libs/term.sh"
 
 "$SCRIPT_DIR/setup-common.sh" || exit 1
 

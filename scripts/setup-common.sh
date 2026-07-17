@@ -6,8 +6,8 @@
 # shellcheck disable=SC1091
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-source "$SCRIPT_DIR/sync-agents/libs/symlink.sh"
-source "$SCRIPT_DIR/sync-agents/libs/term.sh"
+source "$SCRIPT_DIR/libs/symlink.sh"
+source "$SCRIPT_DIR/libs/term.sh"
 
 # Format: "<home/-relative source path>:<$HOME-relative link path>"
 DOTFILES="

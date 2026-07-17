@@ -1,0 +1,27 @@
+# scripts/libs
+
+Shared shell helpers with no ties to a single subsystem — used by the top-level bootstrap scripts (`scripts/setup.sh`, `setup-common.sh`, `setup-macos.sh`) and by `scripts/sync-agents/sync-agents.sh` alike. Anything private to one subsystem belongs in that subsystem's own `libs/` instead (see `scripts/sync-agents/libs/` and its README).
+
+## Modules
+
+| lib | responsibility |
+| --- | --- |
+| `symlink.sh` | Sets up `link` as a symlink to `target`, refusing to replace an existing real directory. Backs up a pre-existing real file to `<link>.bak` before replacing it with a symlink, since this runs against the real `$HOME`. |
+| `term.sh` | Wraps text in ANSI color codes when stdout is a tty (or `TERM_FORCE_COLOR=1` is set, for tests); passes text through unchanged otherwise. |
+
+## Consumers
+
+- `scripts/setup.sh`, `scripts/setup-common.sh`, `scripts/setup-macos.sh` (bootstrap entry points)
+- `scripts/sync-agents/sync-agents.sh` (coding-agent config sync tool)
+
+## Dependencies
+
+- bash (targets macOS's stock 3.2; no bash 4+ features such as associative arrays)
+- `bats-core` (test runner only; `brew install bats-core`)
+
+## Running tests
+
+```sh
+bats scripts/tests/symlink.bats scripts/tests/term.bats
+shellcheck scripts/libs/*.sh
+```
