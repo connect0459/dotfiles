@@ -6,7 +6,9 @@ setup() {
   SETUP_COMMON_SH="$SCRIPTS_DIR/setup-common.sh"
   TMP="$(mktemp -d)"
   export HOME="$TMP/home"
-  export SETUP_DRY_RUN=1
+  # Skips only the network-fetching installs (rustup/mise), so tests can
+  # exercise real symlinking without SETUP_DRY_RUN also suppressing it.
+  export SETUP_SKIP_NETWORK_INSTALLS=1
   mkdir -p "$HOME"
 }
 
@@ -61,21 +63,32 @@ teardown() {
 }
 
 @test "setup-common.sh reports dry-run for rustup install when SETUP_DRY_RUN is set" {
+  export SETUP_DRY_RUN=1
   run "$SETUP_COMMON_SH"
   [ "$status" -eq 0 ]
   [[ "$output" == *"Would install rustup from https://sh.rustup.rs"* ]]
 }
 
 @test "setup-common.sh reports dry-run for mise install when SETUP_DRY_RUN is set" {
+  export SETUP_DRY_RUN=1
   run "$SETUP_COMMON_SH"
   [ "$status" -eq 0 ]
   [[ "$output" == *"Would install mise from https://mise.run"* ]]
 }
 
 @test "setup-common.sh reports dry-run for mise-managed tools when SETUP_DRY_RUN is set" {
+  export SETUP_DRY_RUN=1
   run "$SETUP_COMMON_SH"
   [ "$status" -eq 0 ]
   [[ "$output" == *"Would install mise tools from $REPO_DIR/.mise.toml"* ]]
+}
+
+@test "setup-common.sh prints a dry-run message for symlinking a dotfile and does not create it when SETUP_DRY_RUN is set" {
+  export SETUP_DRY_RUN=1
+  run "$SETUP_COMMON_SH"
+  [ "$status" -eq 0 ]
+  [ ! -e "$HOME/.bashrc" ]
+  [[ "$output" == *"[DRY RUN] Would symlink $HOME/.bashrc -> $REPO_DIR/home/.bashrc"* ]]
 }
 
 @test "setup-common.sh is safe to re-run" {
