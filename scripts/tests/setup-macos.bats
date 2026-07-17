@@ -42,3 +42,10 @@ teardown() {
   [ "$status" -eq 0 ]
   [[ "$output" == *"set it as your login shell"* ]]
 }
+
+@test "setup-macos.sh symlinks VS Code settings.json into HOME, creating parent dirs" {
+  run "$SETUP_MACOS_SH"
+  [ "$status" -eq 0 ]
+  [ -L "$HOME/Library/Application Support/Code/User/settings.json" ]
+  [ "$(readlink "$HOME/Library/Application Support/Code/User/settings.json")" = "$REPO_DIR/home/dot_config/Code/User/settings.json" ]
+}

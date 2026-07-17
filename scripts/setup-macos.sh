@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
-# macOS-specific setup: installs dependencies from Brewfile and configures bash.
-# Safe to re-run.
+# macOS-specific setup: installs dependencies from Brewfile, symlinks VS Code
+# user settings, and configures bash. Safe to re-run.
 
 # shellcheck disable=SC1091
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+source "$SCRIPT_DIR/libs/symlink.sh"
 source "$SCRIPT_DIR/libs/term.sh"
 
 if ! command -v brew &> /dev/null; then
@@ -24,6 +25,17 @@ else
   pln "$(term_red 'Brewfile not found at' "$REPO_DIR/home/Brewfile")" >&2
   exit 1
 fi
+
+echo
+pln "$(term_bold 'Symlinking VS Code user settings')"
+
+VSCODE_SETTINGS_LINK="$HOME/Library/Application Support/Code/User/settings.json"
+mkdir -p "$(dirname "$VSCODE_SETTINGS_LINK")"
+if ! symlink_setup "$REPO_DIR/home/dot_config/Code/User/settings.json" "$VSCODE_SETTINGS_LINK"; then
+  pln "$(term_red 'failed to symlink VS Code settings.json')" >&2
+  exit 1
+fi
+echo "  $VSCODE_SETTINGS_LINK -> $REPO_DIR/home/dot_config/Code/User/settings.json"
 
 HOMEBREW_BASH="$(brew --prefix)/bin/bash"
 if [ -x "$HOMEBREW_BASH" ] && [ "$SHELL" != "$HOMEBREW_BASH" ]; then

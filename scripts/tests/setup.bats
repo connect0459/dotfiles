@@ -60,6 +60,13 @@ teardown() {
   [ -f "$HOME/.agents/AGENTS.md" ]
 }
 
+@test "setup.sh symlinks VS Code settings.json into HOME on macOS" {
+  run "$SETUP_SH"
+  [ "$status" -eq 0 ]
+  [ -L "$HOME/Library/Application Support/Code/User/settings.json" ]
+  [ "$(readlink "$HOME/Library/Application Support/Code/User/settings.json")" = "$REPO_DIR/home/dot_config/Code/User/settings.json" ]
+}
+
 @test "setup.sh prints a reminder to reload the shell config after completing" {
   run "$SETUP_SH"
   [ "$status" -eq 0 ]
