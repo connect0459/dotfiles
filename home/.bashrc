@@ -3,6 +3,9 @@ if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
 fi
 
+# cargo
+. "$HOME/.cargo/env"
+
 # ecnavi-enquete-app-android
 export PATH="${PATH}:${HOME}/Library/Android/sdk/emulator"
 export PATH="${PATH}:${HOME}/Library/Android/sdk/platform-tools"

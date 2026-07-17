@@ -1,6 +1,8 @@
 export BASH_SILENCE_DEPRECATION_WARNING=1
 
 . "$HOME/.local/bin/env"
+
+# cargo
 . "$HOME/.cargo/env"
 
 # Homebrew
