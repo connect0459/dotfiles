@@ -24,18 +24,18 @@ for pair in $DOTFILES; do
   rel="${pair#*:}"
   target="$REPO_DIR/home/$src"
   link="$HOME/$rel"
-  mkdir -p "$(dirname "$link")"
-  if ! symlink_setup "$target" "$link"; then
-    pln "$(term_red "failed to symlink $rel")" >&2
+  if ! symlink_setup_reporting "$target" "$link"; then
     exit 1
   fi
-  echo "  $link -> $target"
 done
 
 echo
 pln "$(term_bold 'Installing Rust toolchain (rustup)')"
 
-if [ -n "$SETUP_DRY_RUN" ]; then
+# SETUP_SKIP_NETWORK_INSTALLS is a test-only escape hatch: unlike
+# SETUP_DRY_RUN, it skips only these network-fetching installs, letting
+# tests exercise real symlinking without also hitting the network.
+if [ -n "$SETUP_DRY_RUN" ] || [ -n "$SETUP_SKIP_NETWORK_INSTALLS" ]; then
   pln "$(term_cyan '[DRY RUN] Would install rustup from https://sh.rustup.rs')"
 else
   curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
@@ -46,7 +46,7 @@ MISE_BIN="$HOME/.local/bin/mise"
 echo
 pln "$(term_bold 'Installing mise')"
 
-if [ -n "$SETUP_DRY_RUN" ]; then
+if [ -n "$SETUP_DRY_RUN" ] || [ -n "$SETUP_SKIP_NETWORK_INSTALLS" ]; then
   pln "$(term_cyan '[DRY RUN] Would install mise from https://mise.run')"
 else
   curl https://mise.run | sh
@@ -55,7 +55,7 @@ fi
 echo
 pln "$(term_bold 'Installing mise-managed tools')"
 
-if [ -n "$SETUP_DRY_RUN" ]; then
+if [ -n "$SETUP_DRY_RUN" ] || [ -n "$SETUP_SKIP_NETWORK_INSTALLS" ]; then
   pln "$(term_cyan '[DRY RUN] Would install mise tools from' "$REPO_DIR/.mise.toml")"
 else
   "$MISE_BIN" install -C "$REPO_DIR"

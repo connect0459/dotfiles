@@ -20,8 +20,11 @@ real file to `<file>.bak` first; installs the cross-platform toolchains rustup a
 via their respective install scripts, then runs `mise install` against the repo's
 `.mise.toml`; and finally delegates to `scripts/sync-agents/sync-agents.sh` for the
 coding-agent config distribution described below), and then runs a platform-specific
-setup script if applicable (e.g. `scripts/setup-macos.sh` on macOS to install
-dependencies from `home/Brewfile` via Homebrew). Safe to re-run.
+setup script if applicable: `scripts/setup-macos.sh` on macOS installs dependencies
+from `home/Brewfile` via Homebrew, and both it and `scripts/setup-linux.sh` on Linux
+symlink `home/dot_config/Code/User/settings.json` into the platform's VS Code user
+settings path (`~/Library/Application Support/Code/User/settings.json` on macOS,
+`~/.config/Code/User/settings.json` on Linux). Safe to re-run.
 
 ## Usage
 

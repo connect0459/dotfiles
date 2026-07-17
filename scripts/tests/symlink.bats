@@ -3,6 +3,7 @@
 setup() {
   LIB_DIR="$(cd "$(dirname "$BATS_TEST_FILENAME")/.." && pwd)/libs"
   source "$LIB_DIR/symlink.sh"
+  source "$LIB_DIR/term.sh"
   TMP="$(mktemp -d)"
 }
 
@@ -71,4 +72,56 @@ teardown() {
   [ -d "$TMP/link.txt" ]
   [ ! -L "$TMP/link.txt" ]
   [ -f "$TMP/link.txt/old.txt" ]
+}
+
+@test "symlink_setup_reporting creates a symlink and reports the mapping" {
+  printf 'content' > "$TMP/target.txt"
+
+  run symlink_setup_reporting "$TMP/target.txt" "$TMP/link.txt"
+
+  [ "$status" -eq 0 ]
+  [ -L "$TMP/link.txt" ]
+  [[ "$output" == *"$TMP/link.txt -> $TMP/target.txt"* ]]
+}
+
+@test "symlink_setup_reporting creates the link's parent directories" {
+  printf 'content' > "$TMP/target.txt"
+
+  run symlink_setup_reporting "$TMP/target.txt" "$TMP/nested/dir/link.txt"
+
+  [ "$status" -eq 0 ]
+  [ -L "$TMP/nested/dir/link.txt" ]
+}
+
+@test "symlink_setup_reporting backs up an existing real file before replacing it" {
+  printf 'target content' > "$TMP/target.txt"
+  printf 'original content' > "$TMP/link.txt"
+
+  run symlink_setup_reporting "$TMP/target.txt" "$TMP/link.txt"
+
+  [ "$status" -eq 0 ]
+  [ -f "$TMP/link.txt.bak" ]
+  [ "$(cat "$TMP/link.txt.bak")" = "original content" ]
+}
+
+@test "symlink_setup_reporting prints a dry-run message and does not touch the filesystem when SETUP_DRY_RUN is set" {
+  printf 'content' > "$TMP/target.txt"
+  export SETUP_DRY_RUN=1
+
+  run symlink_setup_reporting "$TMP/target.txt" "$TMP/link.txt"
+
+  [ "$status" -eq 0 ]
+  [ ! -e "$TMP/link.txt" ]
+  [[ "$output" == *"[DRY RUN] Would symlink $TMP/link.txt -> $TMP/target.txt"* ]]
+}
+
+@test "symlink_setup_reporting returns non-zero and prints an error when refusing to replace a real directory" {
+  printf 'target content' > "$TMP/target.txt"
+  mkdir -p "$TMP/link.txt"
+
+  run symlink_setup_reporting "$TMP/target.txt" "$TMP/link.txt"
+
+  [ "$status" -ne 0 ]
+  [ -d "$TMP/link.txt" ]
+  [ ! -L "$TMP/link.txt" ]
 }

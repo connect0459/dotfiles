@@ -16,6 +16,11 @@ case "$OS" in
       "$SCRIPT_DIR/setup-macos.sh" || exit 1
     fi
     ;;
+  Linux)
+    if [ -x "$SCRIPT_DIR/setup-linux.sh" ]; then
+      "$SCRIPT_DIR/setup-linux.sh" || exit 1
+    fi
+    ;;
 esac
 
 echo
