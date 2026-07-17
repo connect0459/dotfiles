@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Symlinks shell rc files from home/ into $HOME, then delegates to
-# sync-agents/sync-agents.sh for coding-agent config distribution.
-# Safe to re-run.
+# Cross-platform setup: symlinks shell rc files from home/ into $HOME,
+# installs rustup, then delegates to sync-agents/sync-agents.sh for
+# coding-agent config distribution. Safe to re-run.
 
 # shellcheck disable=SC1091
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -31,6 +31,15 @@ for pair in $DOTFILES; do
   fi
   echo "  $link -> $target"
 done
+
+echo
+pln "$(term_bold 'Installing Rust toolchain (rustup)')"
+
+if [ -n "$SETUP_DRY_RUN" ]; then
+  pln "$(term_cyan '[DRY RUN] Would install rustup from https://sh.rustup.rs')"
+else
+  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+fi
 
 echo
 exec "$SCRIPT_DIR/sync-agents/sync-agents.sh"

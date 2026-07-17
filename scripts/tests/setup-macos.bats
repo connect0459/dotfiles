@@ -7,7 +7,7 @@ setup() {
   TMP="$(mktemp -d)"
   export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
   export HOME="$TMP/home"
-  export SETUP_MACOS_DRY_RUN=1
+  export SETUP_DRY_RUN=1
   mkdir -p "$HOME"
 }
 
@@ -20,7 +20,7 @@ teardown() {
   [ "$status" -eq 0 ]
 }
 
-@test "setup-macos.sh reports dry-run when SETUP_MACOS_DRY_RUN is set" {
+@test "setup-macos.sh reports dry-run when SETUP_DRY_RUN is set" {
   run "$SETUP_MACOS_SH"
   [ "$status" -eq 0 ]
   [[ "$output" == *"[DRY RUN]"* ]]

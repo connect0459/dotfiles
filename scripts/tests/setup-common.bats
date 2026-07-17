@@ -6,6 +6,7 @@ setup() {
   SETUP_COMMON_SH="$SCRIPTS_DIR/setup-common.sh"
   TMP="$(mktemp -d)"
   export HOME="$TMP/home"
+  export SETUP_DRY_RUN=1
   mkdir -p "$HOME"
 }
 
@@ -57,6 +58,12 @@ teardown() {
   [ "$status" -eq 0 ]
   [ -L "$HOME/.claude/CLAUDE.md" ]
   [ -f "$HOME/.agents/AGENTS.md" ]
+}
+
+@test "setup-common.sh reports dry-run for rustup install when SETUP_DRY_RUN is set" {
+  run "$SETUP_COMMON_SH"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"[DRY RUN]"* ]]
 }
 
 @test "setup-common.sh is safe to re-run" {
