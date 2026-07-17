@@ -1,4 +1,4 @@
-tap "mutagen-io/mutagen"
+tap "mutagen-io/mutagen", trusted: true
 
 brew "actionlint"
 brew "aws-vault"
