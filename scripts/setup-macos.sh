@@ -34,6 +34,17 @@ else
   mise install -C "$REPO_DIR"
 fi
 
+pln
+pln "$(term_bold 'Installing Rust toolchain (rustup)')"
+
+if command -v rustup &> /dev/null; then
+  pln "$(term_cyan 'rustup already installed, skipping')"
+elif [ -n "$SETUP_MACOS_DRY_RUN" ]; then
+  pln "$(term_cyan '[DRY RUN] Would install rustup from https://sh.rustup.rs')"
+else
+  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+fi
+
 HOMEBREW_BASH="$(brew --prefix)/bin/bash"
 if [ -x "$HOMEBREW_BASH" ] && [ "$SHELL" != "$HOMEBREW_BASH" ]; then
   pln
