@@ -31,6 +31,7 @@ teardown() {
     skip "brew not installed"
   fi
 
+  export SHELL="/bin/bash"
   run "$SETUP_MACOS_SH"
   [ "$status" -eq 0 ]
   [[ "$output" == *"set it as your login shell"* ]]
