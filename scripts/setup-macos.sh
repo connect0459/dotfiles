@@ -25,15 +25,6 @@ else
   exit 1
 fi
 
-pln
-pln "$(term_bold 'Installing mise-managed tools')"
-
-if [ -n "$SETUP_DRY_RUN" ]; then
-  pln "$(term_cyan '[DRY RUN] Would install mise tools from' "$REPO_DIR/.mise.toml")"
-else
-  mise install -C "$REPO_DIR"
-fi
-
 HOMEBREW_BASH="$(brew --prefix)/bin/bash"
 if [ -x "$HOMEBREW_BASH" ] && [ "$SHELL" != "$HOMEBREW_BASH" ]; then
   pln

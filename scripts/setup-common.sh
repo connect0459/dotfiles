@@ -41,5 +41,25 @@ else
   curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 fi
 
+MISE_BIN="$HOME/.local/bin/mise"
+
+echo
+pln "$(term_bold 'Installing mise')"
+
+if [ -n "$SETUP_DRY_RUN" ]; then
+  pln "$(term_cyan '[DRY RUN] Would install mise from https://mise.run')"
+else
+  curl https://mise.run | sh
+fi
+
+echo
+pln "$(term_bold 'Installing mise-managed tools')"
+
+if [ -n "$SETUP_DRY_RUN" ]; then
+  pln "$(term_cyan '[DRY RUN] Would install mise tools from' "$REPO_DIR/.mise.toml")"
+else
+  "$MISE_BIN" install -C "$REPO_DIR"
+fi
+
 echo
 exec "$SCRIPT_DIR/sync-agents/sync-agents.sh"

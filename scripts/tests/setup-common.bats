@@ -63,7 +63,19 @@ teardown() {
 @test "setup-common.sh reports dry-run for rustup install when SETUP_DRY_RUN is set" {
   run "$SETUP_COMMON_SH"
   [ "$status" -eq 0 ]
-  [[ "$output" == *"[DRY RUN]"* ]]
+  [[ "$output" == *"Would install rustup from https://sh.rustup.rs"* ]]
+}
+
+@test "setup-common.sh reports dry-run for mise install when SETUP_DRY_RUN is set" {
+  run "$SETUP_COMMON_SH"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Would install mise from https://mise.run"* ]]
+}
+
+@test "setup-common.sh reports dry-run for mise-managed tools when SETUP_DRY_RUN is set" {
+  run "$SETUP_COMMON_SH"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Would install mise tools from"* ]]
 }
 
 @test "setup-common.sh is safe to re-run" {
