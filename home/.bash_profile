@@ -42,9 +42,5 @@ export PATH="$HOME/bin:$PATH"
 # AWS
 export AWS_SESSION_TOKEN_TTL=12h
 
-# JDK
-export PATH="/opt/homebrew/opt/openjdk@17/bin:$PATH"
-export JAVA_HOME="/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home"
-
 # Android SDK tools
 export PATH="/opt/homebrew/share/android-commandlinetools/emulator:/opt/homebrew/share/android-commandlinetools/platform-tools:$PATH"
