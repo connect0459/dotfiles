@@ -7,11 +7,12 @@
 # shellcheck disable=SC1091
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 LIB_DIR="$SCRIPT_DIR/libs"
+SHARED_LIB_DIR="$SCRIPT_DIR/../libs"
 source "$LIB_DIR/checksum.sh"
 source "$LIB_DIR/dirsync.sh"
 source "$LIB_DIR/permissions.sh"
-source "$LIB_DIR/symlink.sh"
-source "$LIB_DIR/term.sh"
+source "$SHARED_LIB_DIR/symlink.sh"
+source "$SHARED_LIB_DIR/term.sh"
 
 _repeat() {
   local char="$1" count="$2" out=""

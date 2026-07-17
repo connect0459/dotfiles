@@ -5,7 +5,7 @@
 # shellcheck disable=SC1091
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-source "$SCRIPT_DIR/sync-agents/libs/term.sh"
+source "$SCRIPT_DIR/libs/term.sh"
 
 if ! command -v brew &> /dev/null; then
   pln "$(term_red 'brew not found. Please install Homebrew from https://brew.sh')" >&2
