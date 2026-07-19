@@ -19,3 +19,7 @@ eval "$(mise activate bash)"
 
 # moonbit
 export PATH="$HOME/.moon/bin:$PATH"
+
+# rbenv
+export PATH="$HOME/.rbenv/bin:$PATH"
+eval "$(rbenv init - bash)"
