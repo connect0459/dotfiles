@@ -5,6 +5,7 @@
 # shellcheck disable=SC1091
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+source "$SCRIPT_DIR/libs/dry_run.sh"
 source "$SCRIPT_DIR/libs/symlink.sh"
 source "$SCRIPT_DIR/libs/term.sh"
 
@@ -13,7 +14,7 @@ RUBY_VERSION="3.4.5"
 
 pln "$(term_bold 'Installing rbenv')"
 
-if [ -n "$SETUP_DRY_RUN" ] || [ -n "$SETUP_SKIP_NETWORK_INSTALLS" ]; then
+if skip_network_install; then
   pln "$(term_cyan '[DRY RUN] Would clone rbenv and ruby-build into' "$RBENV_ROOT")"
 else
   if [ ! -d "$RBENV_ROOT" ]; then
@@ -27,7 +28,7 @@ fi
 echo
 pln "$(term_bold 'Installing Ruby via rbenv')"
 
-if [ -n "$SETUP_DRY_RUN" ] || [ -n "$SETUP_SKIP_NETWORK_INSTALLS" ]; then
+if skip_network_install; then
   pln "$(term_cyan '[DRY RUN] Would install Ruby' "$RUBY_VERSION" 'via rbenv and set it as the global default')"
 else
   export PATH="$RBENV_ROOT/bin:$PATH"

@@ -5,6 +5,7 @@
 # shellcheck disable=SC1091
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+source "$SCRIPT_DIR/libs/dry_run.sh"
 source "$SCRIPT_DIR/libs/symlink.sh"
 source "$SCRIPT_DIR/libs/term.sh"
 
@@ -16,10 +17,7 @@ fi
 if [ -f "$REPO_DIR/home/Brewfile" ]; then
   pln "$(term_bold 'Installing macOS dependencies from Brewfile')"
 
-  # SETUP_SKIP_NETWORK_INSTALLS is a test-only escape hatch: unlike
-  # SETUP_DRY_RUN, it skips only this install, letting tests exercise real
-  # symlinking without also hitting the network.
-  if [ -n "$SETUP_DRY_RUN" ] || [ -n "$SETUP_SKIP_NETWORK_INSTALLS" ]; then
+  if skip_network_install; then
     pln "$(term_cyan '[DRY RUN] Would install from' "$REPO_DIR/home/Brewfile")"
   else
     brew bundle install --file="$REPO_DIR/home/Brewfile"
@@ -34,7 +32,7 @@ RUBY_VERSION="3.4.5"
 echo
 pln "$(term_bold 'Installing Ruby via rbenv')"
 
-if [ -n "$SETUP_DRY_RUN" ] || [ -n "$SETUP_SKIP_NETWORK_INSTALLS" ]; then
+if skip_network_install; then
   pln "$(term_cyan '[DRY RUN] Would install Ruby' "$RUBY_VERSION" 'via rbenv and set it as the global default')"
 else
   eval "$(rbenv init - bash)"
