@@ -90,6 +90,20 @@ teardown() {
   [[ "$output" == *"Would install mise tools globally from $HOME/.config/mise/config.toml"* ]]
 }
 
+@test "setup-common.sh reports dry-run for nvm install when SETUP_DRY_RUN is set" {
+  export SETUP_DRY_RUN=1
+  run "$SETUP_COMMON_SH"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Would install nvm v0.40.5 from https://github.com/nvm-sh/nvm"* ]]
+}
+
+@test "setup-common.sh reports dry-run for Node install via nvm when SETUP_DRY_RUN is set" {
+  export SETUP_DRY_RUN=1
+  run "$SETUP_COMMON_SH"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Would install Node 24.15.0 via nvm and set it as the default"* ]]
+}
+
 @test "setup-common.sh prints a dry-run message for symlinking a dotfile and does not create it when SETUP_DRY_RUN is set" {
   export SETUP_DRY_RUN=1
   run "$SETUP_COMMON_SH"

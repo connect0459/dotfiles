@@ -6,6 +6,10 @@ setup() {
   SETUP_LINUX_SH="$SCRIPTS_DIR/setup-linux.sh"
   TMP="$(mktemp -d)"
   export HOME="$TMP/home"
+  # Skips only the network-fetching installs (rbenv/ruby-build/ruby), so
+  # tests can exercise real symlinking without SETUP_DRY_RUN also
+  # suppressing it.
+  export SETUP_SKIP_NETWORK_INSTALLS=1
   mkdir -p "$HOME"
 }
 
@@ -49,4 +53,25 @@ teardown() {
   [ "$status" -eq 0 ]
   [ ! -e "$HOME/.config/Code/User/settings.json" ]
   [[ "$output" == *"[DRY RUN] Would symlink $HOME/.config/Code/User/settings.json -> $REPO_DIR/home/dot_config/Code/User/settings.json"* ]]
+}
+
+@test "setup-linux.sh reports dry-run for Ruby build dependencies when SETUP_DRY_RUN is set" {
+  export SETUP_DRY_RUN=1
+  run "$SETUP_LINUX_SH"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Would apt-get install Ruby build dependencies: build-essential autoconf libssl-dev libyaml-dev zlib1g-dev libffi-dev libgmp-dev rustc patch libreadline6-dev libncurses5-dev libgdbm6 libgdbm-dev libdb-dev"* ]]
+}
+
+@test "setup-linux.sh reports dry-run for rbenv install when SETUP_DRY_RUN is set" {
+  export SETUP_DRY_RUN=1
+  run "$SETUP_LINUX_SH"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Would clone rbenv and ruby-build into $HOME/.rbenv"* ]]
+}
+
+@test "setup-linux.sh reports dry-run for Ruby install via rbenv when SETUP_DRY_RUN is set" {
+  export SETUP_DRY_RUN=1
+  run "$SETUP_LINUX_SH"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Would install Ruby 3.4.5 via rbenv and set it as the global default"* ]]
 }

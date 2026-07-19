@@ -37,6 +37,13 @@ teardown() {
   [[ "$output" == *"Would install from $REPO_DIR/home/Brewfile"* ]]
 }
 
+@test "setup-macos.sh reports dry-run for Ruby install via rbenv when SETUP_DRY_RUN is set" {
+  export SETUP_DRY_RUN=1
+  run "$SETUP_MACOS_SH"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Would install Ruby 3.4.5 via rbenv and set it as the global default"* ]]
+}
+
 @test "setup-macos.sh displays instructions for setting login shell when bash is installed" {
   if ! command -v brew &> /dev/null; then
     skip "brew not installed"
