@@ -36,10 +36,10 @@ pln "$(term_bold 'Installing rbenv')"
 if skip_network_install; then
   pln "$(term_cyan '[DRY RUN] Would clone rbenv and ruby-build into' "$RBENV_ROOT")"
 else
-  if [ ! -d "$RBENV_ROOT" ]; then
+  if [ ! -x "$RBENV_ROOT/bin/rbenv" ]; then
     git clone https://github.com/rbenv/rbenv.git "$RBENV_ROOT"
   fi
-  if [ ! -d "$RBENV_ROOT/plugins/ruby-build" ]; then
+  if [ ! -x "$RBENV_ROOT/plugins/ruby-build/bin/ruby-build" ]; then
     git clone https://github.com/rbenv/ruby-build.git "$RBENV_ROOT/plugins/ruby-build"
   fi
 fi
