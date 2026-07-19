@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Linux-specific setup: installs Ruby via rbenv and symlinks VS Code user
-# settings. Safe to re-run.
+# settings. Assumes an apt-based (Debian/Ubuntu) distribution. Safe to
+# re-run.
 
 # shellcheck disable=SC1091
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -11,7 +12,25 @@ source "$SCRIPT_DIR/libs/term.sh"
 
 RBENV_ROOT="$HOME/.rbenv"
 RUBY_VERSION="3.4.5"
+# Suggested build environment for Ubuntu/Debian/Mint, per
+# https://github.com/rbenv/ruby-build/wiki. If a package like libgdbm6 isn't
+# available on your distro version, try an older alias (e.g. libgdbm5).
+RUBY_BUILD_DEPS=(
+  build-essential autoconf libssl-dev libyaml-dev zlib1g-dev libffi-dev
+  libgmp-dev rustc patch libreadline6-dev libncurses5-dev libgdbm6
+  libgdbm-dev libdb-dev
+)
 
+pln "$(term_bold 'Installing Ruby build dependencies')"
+
+if skip_network_install; then
+  pln "$(term_cyan '[DRY RUN] Would apt-get install Ruby build dependencies:' "${RUBY_BUILD_DEPS[*]}")"
+else
+  sudo apt-get update
+  sudo apt-get install -y "${RUBY_BUILD_DEPS[@]}"
+fi
+
+echo
 pln "$(term_bold 'Installing rbenv')"
 
 if skip_network_install; then
