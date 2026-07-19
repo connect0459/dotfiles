@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# macOS-specific setup: installs dependencies from Brewfile, symlinks VS Code
-# user settings, and configures bash. Safe to re-run.
+# macOS-specific setup: installs dependencies from Brewfile, installs Ruby via
+# rbenv, symlinks VS Code user settings, and configures bash. Safe to re-run.
 
 # shellcheck disable=SC1091
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -27,6 +27,19 @@ if [ -f "$REPO_DIR/home/Brewfile" ]; then
 else
   pln "$(term_red 'Brewfile not found at' "$REPO_DIR/home/Brewfile")" >&2
   exit 1
+fi
+
+RUBY_VERSION="3.4.5"
+
+echo
+pln "$(term_bold 'Installing Ruby via rbenv')"
+
+if [ -n "$SETUP_DRY_RUN" ] || [ -n "$SETUP_SKIP_NETWORK_INSTALLS" ]; then
+  pln "$(term_cyan '[DRY RUN] Would install Ruby' "$RUBY_VERSION" 'via rbenv and set it as the global default')"
+else
+  eval "$(rbenv init - bash)"
+  rbenv install --skip-existing "$RUBY_VERSION"
+  rbenv global "$RUBY_VERSION"
 fi
 
 echo
