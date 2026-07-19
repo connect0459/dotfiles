@@ -44,6 +44,13 @@ teardown() {
   [ "$(readlink "$HOME/.config/git/ignore")" = "$REPO_DIR/home/dot_config/git/ignore" ]
 }
 
+@test "setup-common.sh symlinks .config/mise/config.toml into HOME, creating parent dirs" {
+  run "$SETUP_COMMON_SH"
+  [ "$status" -eq 0 ]
+  [ -L "$HOME/.config/mise/config.toml" ]
+  [ "$(readlink "$HOME/.config/mise/config.toml")" = "$REPO_DIR/home/dot_config/mise/config.toml" ]
+}
+
 @test "setup-common.sh backs up a pre-existing real .bashrc before symlinking over it" {
   printf 'local content' > "$HOME/.bashrc"
 
@@ -80,7 +87,7 @@ teardown() {
   export SETUP_DRY_RUN=1
   run "$SETUP_COMMON_SH"
   [ "$status" -eq 0 ]
-  [[ "$output" == *"Would install mise tools from $REPO_DIR/.mise.toml"* ]]
+  [[ "$output" == *"Would install mise tools globally from $HOME/.config/mise/config.toml"* ]]
 }
 
 @test "setup-common.sh prints a dry-run message for symlinking a dotfile and does not create it when SETUP_DRY_RUN is set" {
