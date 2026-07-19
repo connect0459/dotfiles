@@ -15,6 +15,7 @@ DOTFILES="
 .bash_profile:.bash_profile
 .bash_aliases:.bash_aliases
 dot_config/git/ignore:.config/git/ignore
+dot_config/mise/config.toml:.config/mise/config.toml
 "
 
 pln "$(term_bold 'Bootstrapping shell dotfiles')"
@@ -53,12 +54,12 @@ else
 fi
 
 echo
-pln "$(term_bold 'Installing mise-managed tools')"
+pln "$(term_bold 'Installing mise-managed tools globally')"
 
 if [ -n "$SETUP_DRY_RUN" ] || [ -n "$SETUP_SKIP_NETWORK_INSTALLS" ]; then
-  pln "$(term_cyan '[DRY RUN] Would install mise tools from' "$REPO_DIR/.mise.toml")"
+  pln "$(term_cyan '[DRY RUN] Would install mise tools globally from' "$HOME/.config/mise/config.toml")"
 else
-  "$MISE_BIN" install -C "$REPO_DIR"
+  "$MISE_BIN" install
 fi
 
 echo

@@ -14,11 +14,13 @@ Clone this repo anywhere, then run:
 ```
 
 This runs `scripts/setup-common.sh` (which symlinks `home/.bashrc`, `home/.bash_profile`,
-`home/.bash_aliases`, and `home/dot_config/git/ignore` into `$HOME` as `.bashrc`,
-`.bash_profile`, `.bash_aliases`, and `.config/git/ignore`, backing up any pre-existing
-real file to `<file>.bak` first; installs the cross-platform toolchains rustup and mise
-via their respective install scripts, then runs `mise install` against the repo's
-`.mise.toml`; and finally delegates to `scripts/sync-agents/sync-agents.sh` for the
+`home/.bash_aliases`, `home/dot_config/git/ignore`, and `home/dot_config/mise/config.toml`
+into `$HOME` as `.bashrc`, `.bash_profile`, `.bash_aliases`, `.config/git/ignore`, and
+`.config/mise/config.toml`, backing up any pre-existing real file to `<file>.bak` first;
+installs the cross-platform toolchains rustup and mise via their respective install
+scripts, then runs `mise install` against the now-global `~/.config/mise/config.toml`
+(mise's global tool-version config, replacing per-language version managers like nvm or
+rbenv); and finally delegates to `scripts/sync-agents/sync-agents.sh` for the
 coding-agent config distribution described below), and then runs a platform-specific
 setup script if applicable: `scripts/setup-macos.sh` on macOS installs dependencies
 from `home/Brewfile` via Homebrew, and both it and `scripts/setup-linux.sh` on Linux
