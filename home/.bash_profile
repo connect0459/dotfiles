@@ -1,5 +1,9 @@
 export BASH_SILENCE_DEPRECATION_WARNING=1
 
+# Homebrew (must run before loading bashrc, which initializes rbenv/mise/etc.
+# that rely on Homebrew-installed binaries being on PATH)
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
 # Load bashrc
 if [ -f ~/.bashrc ]; then
     . ~/.bashrc
@@ -9,9 +13,6 @@ fi
 
 # cargo
 . "$HOME/.cargo/env"
-
-# Homebrew
-eval "$(/opt/homebrew/bin/brew shellenv)"
 
 # Starting Colima
 if command -v colima &> /dev/null; then
