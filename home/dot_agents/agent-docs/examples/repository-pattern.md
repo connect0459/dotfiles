@@ -173,9 +173,14 @@ func (r *memoryUserRepository) Delete(id string) error {
 package services
 
 import (
+    "errors"
     "myapp/internal/domain/entities"
     "myapp/internal/domain/repositories"
 )
+
+// ErrEmailAlreadyExists は業務ルール違反（重複登録）を表す
+// 入力形式は妥当だが、現在の状態（既存ユーザーの存在）と矛盾する
+var ErrEmailAlreadyExists = errors.New("email already exists")
 
 // UserService はユーザー関連のユースケースを定義する
 type UserService interface {
@@ -196,6 +201,8 @@ func NewUserService(userRepo repositories.UserRepository) UserService {
 }
 
 func (s *userService) CreateUser(email, password string) (*entities.User, error) {
+    // ここが境界: 生の文字列がドメインの値オブジェクトへdecodeされる
+    // 失敗すれば *entities.ValidationError（入力形式不正）が返る
     emailVO, err := entities.NewEmail(email)
     if err != nil {
         return nil, err
@@ -206,10 +213,14 @@ func (s *userService) CreateUser(email, password string) (*entities.User, error)
         return nil, err
     }
 
+    if _, err := s.userRepo.FindByEmail(emailVO.String()); err == nil {
+        return nil, ErrEmailAlreadyExists // 業務ルール違反
+    }
+
     user := entities.NewUser(generateID(), emailVO, passwordVO)
 
     if err := s.userRepo.Save(&user); err != nil {
-        return nil, err
+        return nil, err // インフラ障害
     }
 
     return &user, nil
@@ -220,6 +231,42 @@ func (s *userService) FindUserByEmail(email string) (*entities.User, error) {
 }
 ```
 
+### 4.5 境界でのエラー分類 — 入力形式不正・業務ルール違反・インフラ障害を区別する
+
+`entities.NewEmail` / `NewPassword` の失敗と、`ErrEmailAlreadyExists` と、リポジトリのインフラ障害は原因が異なる。同じ `error` 型に潰さず、Handlerで区別できる形にする。
+
+```go
+// internal/domain/entities/errors.go
+package entities
+
+import "fmt"
+
+// ValidationError は値オブジェクトのコンストラクタ失敗を表す（入力形式不正）
+type ValidationError struct {
+    Field   string
+    Message string
+}
+
+func (e *ValidationError) Error() string {
+    return fmt.Sprintf("%s: %s", e.Field, e.Message)
+}
+```
+
+```go
+// internal/domain/entities/email.go（NewEmailの変更点のみ）
+func NewEmail(value string) (Email, error) {
+    if value == "" {
+        return Email{}, &ValidationError{Field: "email", Message: "cannot be empty"}
+    }
+    if !emailRegex.MatchString(value) {
+        return Email{}, &ValidationError{Field: "email", Message: "invalid format"}
+    }
+    return Email{value: value}, nil
+}
+```
+
+詳細な設計方針は `agent-docs/architecture/onion-architecture.md` の「境界とレイヤーの違い」を参照。
+
 ### 5. プレゼンテーション層: Handler
 
 ```go
@@ -227,7 +274,9 @@ func (s *userService) FindUserByEmail(email string) (*entities.User, error) {
 package handlers
 
 import (
+    "errors"
     "myapp/internal/application/services"
+    "myapp/internal/domain/entities"
     "net/http"
 
     "github.com/labstack/echo/v4"
@@ -257,12 +306,19 @@ func (h *userHandler) CreateUser(c echo.Context) error {
         Password string `json:"password"`
     }
     if err := c.Bind(&req); err != nil {
-        return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid request"})
+        return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid request"}) // 入力形式不正
     }
 
     user, err := h.userService.CreateUser(req.Email, req.Password)
-    if err != nil {
-        return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+
+    var validationErr *entities.ValidationError
+    switch {
+    case errors.As(err, &validationErr):
+        return c.JSON(http.StatusBadRequest, map[string]string{"error": validationErr.Error()}) // 400: 入力形式不正
+    case errors.Is(err, services.ErrEmailAlreadyExists):
+        return c.JSON(http.StatusUnprocessableEntity, map[string]string{"error": err.Error()}) // 422: 業務ルール違反
+    case err != nil:
+        return c.JSON(http.StatusInternalServerError, map[string]string{"error": "internal error"}) // 500: インフラ障害（詳細は返さない）
     }
 
     return c.JSON(http.StatusCreated, user)
@@ -383,3 +439,4 @@ func NewGormUserRepository(db *gorm.DB) repositories.UserRepository {
 4. **テストはインメモリ**: モックではなく実際のインメモリ実装を使用
 5. **依存性逆転**: 上位層のinterfaceに下位層が依存する
 6. **組み立ては一箇所**: Registryが唯一具体的な実装を知る場所
+7. **エラーは境界の種類で分類**: 入力形式不正(400)・業務ルール違反(422)・インフラ障害(500)を型で区別する。詳細は `agent-docs/architecture/onion-architecture.md` の「境界とレイヤーの違い」を参照
