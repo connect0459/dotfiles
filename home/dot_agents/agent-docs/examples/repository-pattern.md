@@ -40,7 +40,14 @@ registry/registry.go                         (各層の組み立て)
 // internal/domain/repositories/user_repository.go
 package repositories
 
-import "myapp/internal/domain/entities"
+import (
+    "errors"
+    "myapp/internal/domain/entities"
+)
+
+// ErrUserNotFound はユーザーが見つからない場合に返す
+// インフラ障害と区別するため、実装はこの値をラップして返す（生のドライバエラーをそのまま返さない）
+var ErrUserNotFound = errors.New("user not found")
 
 // UserRepository はユーザーの永続化を抽象化する
 type UserRepository interface {
@@ -58,6 +65,7 @@ type UserRepository interface {
 package persistence
 
 import (
+    "errors"
     "myapp/internal/domain/entities"
     "myapp/internal/domain/repositories"
     "gorm.io/gorm"
@@ -78,7 +86,10 @@ func NewGormUserRepository(db *gorm.DB) repositories.UserRepository {
 func (r *gormUserRepository) FindByID(id string) (*entities.User, error) {
     var user entities.User
     if err := r.db.First(&user, "id = ?", id).Error; err != nil {
-        return nil, err
+        if errors.Is(err, gorm.ErrRecordNotFound) {
+            return nil, repositories.ErrUserNotFound
+        }
+        return nil, err // インフラ障害はそのまま伝播する
     }
     return &user, nil
 }
@@ -86,7 +97,10 @@ func (r *gormUserRepository) FindByID(id string) (*entities.User, error) {
 func (r *gormUserRepository) FindByEmail(email string) (*entities.User, error) {
     var user entities.User
     if err := r.db.First(&user, "email = ?", email).Error; err != nil {
-        return nil, err
+        if errors.Is(err, gorm.ErrRecordNotFound) {
+            return nil, repositories.ErrUserNotFound
+        }
+        return nil, err // インフラ障害はそのまま伝播する
     }
     return &user, nil
 }
@@ -107,7 +121,6 @@ func (r *gormUserRepository) Delete(id string) error {
 package memory
 
 import (
-    "errors"
     "myapp/internal/domain/entities"
     "myapp/internal/domain/repositories"
     "sync"
@@ -132,7 +145,7 @@ func (r *memoryUserRepository) FindByID(id string) (*entities.User, error) {
 
     user, exists := r.users[id]
     if !exists {
-        return nil, errors.New("user not found")
+        return nil, repositories.ErrUserNotFound
     }
     return user, nil
 }
@@ -146,7 +159,7 @@ func (r *memoryUserRepository) FindByEmail(email string) (*entities.User, error)
             return user, nil
         }
     }
-    return nil, errors.New("user not found")
+    return nil, repositories.ErrUserNotFound
 }
 
 func (r *memoryUserRepository) Save(user *entities.User) error {
@@ -213,13 +226,24 @@ func (s *userService) CreateUser(email, password string) (*entities.User, error)
         return nil, err
     }
 
-    if _, err := s.userRepo.FindByEmail(emailVO.String()); err == nil {
-        return nil, ErrEmailAlreadyExists // 業務ルール違反
+    // この事前チェックはcheck-then-actであり、並行リクエストによる二重登録の窓を
+    // 完全には塞げない。一意性の最終防衛線はDBのUNIQUE制約に置き、下のSaveが
+    // その制約違反を返した場合もErrEmailAlreadyExistsとして扱う。
+    _, err = s.userRepo.FindByEmail(emailVO.String())
+    switch {
+    case err == nil:
+        return nil, ErrEmailAlreadyExists // 業務ルール違反: 既に存在する
+    case errors.Is(err, repositories.ErrUserNotFound):
+        // 未登録であり、想定どおりの経路。処理を継続する
+    default:
+        return nil, err // インフラ障害。未登録と誤認して処理を進めない
     }
 
     user := entities.NewUser(generateID(), emailVO, passwordVO)
 
     if err := s.userRepo.Save(&user); err != nil {
+        // Save がDBのUNIQUE制約違反を検出した場合（実装はドライバ依存）も
+        // ErrEmailAlreadyExists として扱い、事前チェックのレース窓を塞ぐ
         return nil, err // インフラ障害
     }
 
@@ -233,7 +257,7 @@ func (s *userService) FindUserByEmail(email string) (*entities.User, error) {
 
 ### 4.5 境界でのエラー分類 — 入力形式不正・業務ルール違反・インフラ障害を区別する
 
-`entities.NewEmail` / `NewPassword` の失敗と、`ErrEmailAlreadyExists` と、リポジトリのインフラ障害は原因が異なる。同じ `error` 型に潰さず、Handlerで区別できる形にする。
+`entities.NewEmail` / `NewPassword` の失敗（入力形式不正）と、`repositories.ErrUserNotFound`（未検出、正常系の一部）と、`ErrEmailAlreadyExists`（業務ルール違反）と、リポジトリのインフラ障害は、それぞれ原因が異なる。同じ `error` 型・同じ判定（`err == nil` など）に潰さず、`errors.Is` / `errors.As` で区別できる形にする。特に「未検出」と「インフラ障害」を区別しない実装は、DB障害を「未検出」と誤認して後続処理を継続させる欠陥を生みやすい。
 
 ```go
 // internal/domain/entities/errors.go
@@ -277,6 +301,7 @@ import (
     "errors"
     "myapp/internal/application/services"
     "myapp/internal/domain/entities"
+    "myapp/internal/domain/repositories"
     "net/http"
 
     "github.com/labstack/echo/v4"
@@ -328,8 +353,11 @@ func (h *userHandler) FindUserByEmail(c echo.Context) error {
     email := c.QueryParam("email")
 
     user, err := h.userService.FindUserByEmail(email)
-    if err != nil {
-        return c.JSON(http.StatusNotFound, map[string]string{"error": err.Error()})
+    switch {
+    case errors.Is(err, repositories.ErrUserNotFound):
+        return c.JSON(http.StatusNotFound, map[string]string{"error": "user not found"}) // 404: 未検出
+    case err != nil:
+        return c.JSON(http.StatusInternalServerError, map[string]string{"error": "internal error"}) // 500: インフラ障害（詳細は返さない）
     }
 
     return c.JSON(http.StatusOK, user)
@@ -440,3 +468,5 @@ func NewGormUserRepository(db *gorm.DB) repositories.UserRepository {
 5. **依存性逆転**: 上位層のinterfaceに下位層が依存する
 6. **組み立ては一箇所**: Registryが唯一具体的な実装を知る場所
 7. **エラーは境界の種類で分類**: 入力形式不正(400)・業務ルール違反(422)・インフラ障害(500)を型で区別する。詳細は `agent-docs/architecture/onion-architecture.md` の「境界とレイヤーの違い」を参照
+8. **「見つからない」と「インフラ障害」を混同しない**: リポジトリは両者を同じ`error`値で返さない。`err == nil`だけで分岐すると、DB障害を「未検出」と誤認して処理を継続する欠陥になる
+9. **事前チェックは正当性の唯一の根拠にしない**: 一意性などの不変条件は、事前チェック（check-then-act）だけでなくDBの制約（UNIQUE等）を最終防衛線として持つ
