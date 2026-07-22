@@ -9,7 +9,7 @@
   "editor.unicodeHighlight.nonBasicASCII": false,
   "editor.unicodeHighlight.ambiguousCharacters": false,
   "files.associations": {
-    ".config/git/ignore": "ignore",
+    "**/git/ignore": "gitignore",
     ".swiftformat": "plaintext"
   },
   "files.autoSave": "afterDelay",
