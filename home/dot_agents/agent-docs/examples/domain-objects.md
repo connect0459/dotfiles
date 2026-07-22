@@ -487,3 +487,68 @@ func (o Order) Status() string {
 - Orderのステータスは導出値になり、「状態の組み合わせ爆発」を回避できる
 - 返品フローもアイテム単位で表現可能（`FulfillmentReturned`）
 - 集約ルートはOrderのままだが、OrderItemはエンティティに昇格（独自IDを持つ）
+
+### 型による閉じ込め — 不正な組み合わせをさらに厳密に排除する
+
+上記の `FulfillmentStatus` は文字列定数の列挙であり、コンパイラは網羅性を保証しない。値の取り違えや、本来その状態には伴わないはずのフィールド（例: `Pending`なのに`TrackingNumber`を持つ）を構造上防げていない。
+
+不変条件の重要度が高く、誤った組み合わせのコストが型安全性への投資に見合う場合は、非公開interfaceメソッドでsealedを模倣する。
+
+```go
+// FulfillmentState は非公開メソッドで実装をこのパッケージ内に限定する（sealedの模倣）
+type FulfillmentState interface {
+    isFulfillmentState()
+}
+
+type Pending struct{}
+
+func (Pending) isFulfillmentState() {}
+
+type Allocated struct {
+    WarehouseID string
+}
+
+func (Allocated) isFulfillmentState() {}
+
+type Shipped struct {
+    WarehouseID    string
+    TrackingNumber string // Shippedになって初めて追跡番号を持てる
+}
+
+func (Shipped) isFulfillmentState() {}
+
+type Delivered struct {
+    WarehouseID    string
+    TrackingNumber string
+    DeliveredAt    time.Time
+}
+
+func (Delivered) isFulfillmentState() {}
+
+// Ship はAllocatedからのみShippedへ遷移できる
+// PendingやDeliveredから直接呼び出す経路はコンパイル時に存在しない
+func Ship(a Allocated, trackingNumber string) Shipped {
+    return Shipped{WarehouseID: a.WarehouseID, TrackingNumber: trackingNumber}
+}
+```
+
+```go
+func describe(s FulfillmentState) string {
+    switch v := s.(type) {
+    case Pending:
+        return "処理待ち"
+    case Allocated:
+        return "引当済み: " + v.WarehouseID
+    case Shipped:
+        return "発送済み: " + v.TrackingNumber
+    case Delivered:
+        return "配達完了: " + v.DeliveredAt.Format(time.RFC3339)
+    default:
+        return "unknown"
+    }
+}
+```
+
+`Shipped` は `TrackingNumber` を持てるが `Pending` は持てない、という制約が型で表現される。ただしGoの `switch` は網羅性をコンパイラ保証しないため、状態を追加した際の更新漏れを防ぎたい場合は `exhaustive` linterの導入を検討する。
+
+この技法はPhase 3の調節コストのうち「テスト書き換え範囲」「影響エンティティ数」を増やす。非プロトタイプ的ケースの発生頻度が低い場面では、既存の `FulfillmentStatus` enumのままで構わない。採否の判断基準は `agent-docs/philosophy/designing-domain-objects.md` のPhase 3 Step 4を参照。
