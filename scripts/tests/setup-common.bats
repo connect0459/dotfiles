@@ -10,6 +10,10 @@ setup() {
   # exercise real symlinking without SETUP_DRY_RUN also suppressing it.
   export SETUP_SKIP_NETWORK_INSTALLS=1
   mkdir -p "$HOME"
+  # Strip user-level toolchain dirs (~/.cargo/bin, ~/.local/bin, rbenv/mise
+  # shims, ...) so the new "already installed" existence checks see a clean
+  # machine, not whatever happens to be on the developer's real PATH.
+  export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 }
 
 teardown() {
@@ -121,4 +125,41 @@ teardown() {
   [ "$status" -eq 0 ]
   [ -L "$HOME/.bashrc" ]
   [ ! -e "$HOME/.bashrc.bak" ]
+}
+
+@test "setup-common.sh skips rustup install and reports already-installed when rustup is already on PATH" {
+  FAKE_BIN="$TMP/fakebin"
+  mkdir -p "$FAKE_BIN"
+  printf '#!/usr/bin/env bash\n' > "$FAKE_BIN/rustup"
+  chmod +x "$FAKE_BIN/rustup"
+  export PATH="$FAKE_BIN:$PATH"
+
+  run "$SETUP_COMMON_SH"
+
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"rustup already installed, skipping"* ]]
+  [[ "$output" != *"Would install rustup"* ]]
+}
+
+@test "setup-common.sh skips mise install and reports already-installed when mise is already installed" {
+  mkdir -p "$HOME/.local/bin"
+  printf '#!/usr/bin/env bash\n' > "$HOME/.local/bin/mise"
+  chmod +x "$HOME/.local/bin/mise"
+
+  run "$SETUP_COMMON_SH"
+
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"mise already installed, skipping"* ]]
+  [[ "$output" != *"Would install mise from https://mise.run"* ]]
+}
+
+@test "setup-common.sh skips nvm install and reports already-installed when nvm is already installed" {
+  mkdir -p "$HOME/.nvm"
+  printf '# stub nvm.sh\n' > "$HOME/.nvm/nvm.sh"
+
+  run "$SETUP_COMMON_SH"
+
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"nvm already installed, skipping"* ]]
+  [[ "$output" != *"Would install nvm v0.40.5"* ]]
 }

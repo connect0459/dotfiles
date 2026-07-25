@@ -34,7 +34,9 @@ done
 echo
 pln "$(term_bold 'Installing Rust toolchain (rustup)')"
 
-if skip_network_install; then
+if command -v rustup &> /dev/null; then
+  pln "$(term_cyan 'rustup already installed, skipping')"
+elif skip_network_install; then
   pln "$(term_cyan '[DRY RUN] Would install rustup from https://sh.rustup.rs')"
 else
   curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
@@ -45,7 +47,9 @@ MISE_BIN="$HOME/.local/bin/mise"
 echo
 pln "$(term_bold 'Installing mise')"
 
-if skip_network_install; then
+if [ -x "$MISE_BIN" ] || command -v mise &> /dev/null; then
+  pln "$(term_cyan 'mise already installed, skipping')"
+elif skip_network_install; then
   pln "$(term_cyan '[DRY RUN] Would install mise from https://mise.run')"
 else
   curl https://mise.run | sh
@@ -67,7 +71,9 @@ NODE_VERSION="24.15.0"
 echo
 pln "$(term_bold 'Installing nvm')"
 
-if skip_network_install; then
+if [ -s "$NVM_DIR/nvm.sh" ]; then
+  pln "$(term_cyan 'nvm already installed, skipping')"
+elif skip_network_install; then
   pln "$(term_cyan '[DRY RUN] Would install nvm' "$NVM_VERSION" 'from https://github.com/nvm-sh/nvm')"
 else
   curl -o- "https://raw.githubusercontent.com/nvm-sh/nvm/$NVM_VERSION/install.sh" | PROFILE=/dev/null bash
