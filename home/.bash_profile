@@ -2,7 +2,9 @@ export BASH_SILENCE_DEPRECATION_WARNING=1
 
 # Homebrew (must run before loading bashrc, which initializes rbenv/mise/etc.
 # that rely on Homebrew-installed binaries being on PATH)
-eval "$(/opt/homebrew/bin/brew shellenv)"
+if [ -x /opt/homebrew/bin/brew ]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
 
 # Load bashrc
 if [ -f ~/.bashrc ]; then
@@ -27,4 +29,6 @@ export PATH="$HOME/bin:$PATH"
 export AWS_SESSION_TOKEN_TTL=12h
 
 # Android SDK tools
-export PATH="/opt/homebrew/share/android-commandlinetools/emulator:/opt/homebrew/share/android-commandlinetools/platform-tools:$PATH"
+if [ -d /opt/homebrew/share/android-commandlinetools ]; then
+    export PATH="/opt/homebrew/share/android-commandlinetools/emulator:/opt/homebrew/share/android-commandlinetools/platform-tools:$PATH"
+fi
