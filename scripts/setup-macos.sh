@@ -9,17 +9,16 @@ source "$SCRIPT_DIR/libs/dry_run.sh"
 source "$SCRIPT_DIR/libs/symlink.sh"
 source "$SCRIPT_DIR/libs/term.sh"
 
-if ! command -v brew &> /dev/null; then
-  pln "$(term_red 'brew not found. Please install Homebrew from https://brew.sh')" >&2
-  exit 1
-fi
-
 if [ -f "$REPO_DIR/home/Brewfile" ]; then
   pln "$(term_bold 'Installing macOS dependencies from Brewfile')"
 
   if skip_network_install; then
     pln "$(term_cyan '[DRY RUN] Would install from' "$REPO_DIR/home/Brewfile")"
   else
+    if ! command -v brew &> /dev/null; then
+      pln "$(term_red 'brew not found. Please install Homebrew from https://brew.sh')" >&2
+      exit 1
+    fi
     brew bundle install --file="$REPO_DIR/home/Brewfile"
   fi
 else
@@ -48,11 +47,13 @@ if ! symlink_setup_reporting "$REPO_DIR/home/dot_config/Code/User/settings.json"
   exit 1
 fi
 
-HOMEBREW_BASH="$(brew --prefix)/bin/bash"
-if [ -x "$HOMEBREW_BASH" ] && [ "$SHELL" != "$HOMEBREW_BASH" ]; then
-  pln
-  pln "$(term_bold 'Homebrew bash installed.')"
-  pln "$(term_cyan 'To set it as your login shell, run:')"
-  pln "  echo $HOMEBREW_BASH | sudo tee -a /etc/shells"
-  pln "  chsh -s $HOMEBREW_BASH"
+if command -v brew &> /dev/null; then
+  HOMEBREW_BASH="$(brew --prefix)/bin/bash"
+  if [ -x "$HOMEBREW_BASH" ] && [ "$SHELL" != "$HOMEBREW_BASH" ]; then
+    pln
+    pln "$(term_bold 'Homebrew bash installed.')"
+    pln "$(term_cyan 'To set it as your login shell, run:')"
+    pln "  echo $HOMEBREW_BASH | sudo tee -a /etc/shells"
+    pln "  chsh -s $HOMEBREW_BASH"
+  fi
 fi
