@@ -2,6 +2,10 @@
 default:
   @just --list
 
+# Setup after clone
+setup:
+  pre-commit install
+
 # Lint shell scripts - Usage: just lint [path]
 lint path="scripts":
   shellcheck $(find {{path}} -name "*.sh" -type f)
