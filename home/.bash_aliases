@@ -42,3 +42,5 @@ git_cleanup() {
         | grep -v " $default_branch$" \
         | xargs -r git branch -d
 }
+
+alias alias_gc='git_cleanup'
