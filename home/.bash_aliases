@@ -72,6 +72,11 @@ git_rebase_default() {
     local current_branch
     current_branch=$(git branch --show-current)
 
+    if [[ -z "$current_branch" ]]; then
+        echo "Error: Not on a branch (detached HEAD)." >&2
+        return 1
+    fi
+
     if [[ "$current_branch" == "$default_branch" ]]; then
         echo "Already on the default branch '$default_branch'." >&2
         return 0
