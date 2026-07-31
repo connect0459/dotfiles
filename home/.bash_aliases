@@ -59,10 +59,25 @@ git_cleanup_all() {
     git checkout "$default_branch" || return 1
     git pull origin "$default_branch" || return 1
 
-    git branch \
-        | grep -v "^\*" \
-        | grep -v " $default_branch$" \
-        | xargs -r git branch -D
+    local targets
+    targets=$(git branch | grep -v "^\*" | grep -v " $default_branch$")
+
+    if [[ -z "$targets" ]]; then
+        echo "No branches to delete."
+        return 0
+    fi
+
+    echo "The following branches will be force-deleted (including unmerged ones):"
+    echo "$targets"
+
+    local reply
+    read -r -p "Proceed? [y/N] " reply
+    if [[ ! "$reply" =~ ^[Yy]$ ]]; then
+        echo "Aborted." >&2
+        return 1
+    fi
+
+    echo "$targets" | xargs -r git branch -D
 }
 
 git_rebase_default() {
