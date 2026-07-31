@@ -14,7 +14,7 @@ alias l='ls -CF'
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
 # Git
-git_cleanup() {
+_git_default_branch() {
     local has_main has_master
 
     git show-ref --verify --quiet refs/heads/main && has_main=1
@@ -25,14 +25,21 @@ git_cleanup() {
         return 1
     fi
 
-    git fetch --prune || return 1
-
     local default_branch
     default_branch=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@')
     if [[ -z "$default_branch" ]]; then
         echo "Error: Could not determine the default branch from origin/HEAD." >&2
         return 1
     fi
+
+    echo "$default_branch"
+}
+
+git_cleanup() {
+    git fetch --prune || return 1
+
+    local default_branch
+    default_branch=$(_git_default_branch) || return 1
 
     git checkout "$default_branch" || return 1
     git pull origin "$default_branch" || return 1
