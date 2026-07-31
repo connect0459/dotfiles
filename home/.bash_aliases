@@ -50,4 +50,20 @@ git_cleanup() {
         | xargs -r git branch -d
 }
 
+git_cleanup_all() {
+    git fetch --prune || return 1
+
+    local default_branch
+    default_branch=$(_git_default_branch) || return 1
+
+    git checkout "$default_branch" || return 1
+    git pull origin "$default_branch" || return 1
+
+    git branch \
+        | grep -v "^\*" \
+        | grep -v " $default_branch$" \
+        | xargs -r git branch -D
+}
+
 alias alias_gc='git_cleanup'
+alias alias_gca='git_cleanup_all'
