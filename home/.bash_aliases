@@ -65,5 +65,24 @@ git_cleanup_all() {
         | xargs -r git branch -D
 }
 
+git_rebase_default() {
+    local default_branch
+    default_branch=$(_git_default_branch) || return 1
+
+    local current_branch
+    current_branch=$(git branch --show-current)
+
+    if [[ "$current_branch" == "$default_branch" ]]; then
+        echo "Already on the default branch '$default_branch'." >&2
+        return 0
+    fi
+
+    git checkout "$default_branch" || return 1
+    git pull origin "$default_branch" || return 1
+    git checkout - || return 1
+    git rebase "$default_branch"
+}
+
 alias alias_gc='git_cleanup'
 alias alias_gca='git_cleanup_all'
+alias alias_grd='git_rebase_default'
