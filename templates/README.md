@@ -25,6 +25,12 @@ themselves are installed via `home/Brewfile` (see `scripts/setup-macos.sh`).
 you want into `~/.colima/default/colima.yaml` by hand (or via
 `colima start --edit`), adjusting for the current host.
 
+`~/.colima/default/colima.yaml` itself is generated from
+`~/.colima/_templates/default.yaml` when the `default` profile is created —
+edits made directly to `colima.yaml` are only in effect until the VM is
+recreated. To make a change stick across profile recreation, edit
+`~/.colima/_templates/default.yaml` instead.
+
 ### Cleanup
 
 Colima's raw disk image is a sparse file that grows as containers/images
