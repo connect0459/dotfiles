@@ -21,7 +21,7 @@ themselves are installed via `home/Brewfile` (see `scripts/setup-macos.sh`).
   drop or reorder comments on write. Symlinking it into this repo would
   mean colima's own runtime behavior dirties a tracked file.
 
-`colima.yaml.example` is a plain reference file instead: copy the values
+`colima.example.yaml` is a plain reference file instead: copy the values
 you want into `~/.colima/default/colima.yaml` by hand (or via
 `colima start --edit`), adjusting for the current host.
 
