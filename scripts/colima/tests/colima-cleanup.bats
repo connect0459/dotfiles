@@ -83,3 +83,27 @@ teardown() {
   grep -q -- "--profile default -- docker system prune -a -f" "$CALL_LOG"
   grep -q -- "--profile default -- sudo fstrim -av" "$CALL_LOG"
 }
+
+@test "colima-cleanup.sh fails and does not run fstrim when docker prune fails" {
+  export PATH="$FAKE_BIN:$PATH"
+  cat > "$FAKE_BIN/colima" <<'FAKE'
+#!/usr/bin/env bash
+echo "$@" >> "$CALL_LOG"
+case "$*" in
+  status*) exit 0 ;;
+  *"docker system prune"*) exit 1 ;;
+  *) exit 0 ;;
+esac
+FAKE
+  chmod +x "$FAKE_BIN/colima"
+
+  run "$SCRIPT"
+  [ "$status" -ne 0 ]
+  ! grep -q "fstrim" "$CALL_LOG"
+}
+
+@test "colima-cleanup.sh exits with an error instead of hanging when --profile has no value" {
+  run "$SCRIPT" --profile
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"--profile"* ]]
+}

@@ -28,6 +28,11 @@ PROFILE="default"
 while [ $# -gt 0 ]; do
   case "$1" in
     -p|--profile)
+      if [ $# -lt 2 ]; then
+        pln "$(term_red "$1 requires a value")" >&2
+        usage >&2
+        exit 1
+      fi
       PROFILE="$2"
       shift 2
       ;;
@@ -66,8 +71,15 @@ pln "$(term_dim 'Before:')"
 du -sh "$COLIMA_HOME" 2>/dev/null || true
 df -h / 2>/dev/null || true
 
-colima ssh --profile "$PROFILE" -- docker system prune -a -f
-colima ssh --profile "$PROFILE" -- sudo fstrim -av
+if ! colima ssh --profile "$PROFILE" -- docker system prune -a -f; then
+  pln "$(term_red "docker system prune failed inside colima profile '$PROFILE'")" >&2
+  exit 1
+fi
+
+if ! colima ssh --profile "$PROFILE" -- sudo fstrim -av; then
+  pln "$(term_red "fstrim failed inside colima profile '$PROFILE'")" >&2
+  exit 1
+fi
 
 echo
 pln "$(term_dim 'After:')"
