@@ -5,7 +5,7 @@
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 # shellcheck disable=SC1091
-source "$SCRIPT_DIR/libs/term.sh"
+source "$SCRIPT_DIR/../libs/term.sh"
 
 usage() {
   cat <<'EOF'

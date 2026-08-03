@@ -32,9 +32,9 @@ are created but does not shrink on its own — deleting files inside the VM
 does not release space back to the host filesystem. Run:
 
 ```sh
-scripts/colima-cleanup.sh
+scripts/colima/colima-cleanup.sh
 ```
 
-periodically (see `scripts/colima-cleanup.sh --help`) to reclaim it via
+periodically (see `scripts/colima/colima-cleanup.sh --help`) to reclaim it via
 `docker system prune` + `fstrim`, rather than waiting until the host disk
 is nearly full.

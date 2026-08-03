@@ -1,8 +1,7 @@
 #!/usr/bin/env bats
 
 setup() {
-  SCRIPTS_DIR="$(cd "$(dirname "$BATS_TEST_FILENAME")/.." && pwd)"
-  SCRIPT="$SCRIPTS_DIR/colima-cleanup.sh"
+  SCRIPT="$(cd "$(dirname "$BATS_TEST_FILENAME")/.." && pwd)/colima-cleanup.sh"
   TMP="$(mktemp -d)"
   FAKE_BIN="$TMP/bin"
   mkdir -p "$FAKE_BIN"
