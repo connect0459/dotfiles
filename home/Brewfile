@@ -14,6 +14,7 @@ brew "go"
 brew "jq"
 brew "just"
 brew "libiconv"
+brew "librsvg" # for `rsvg-convert`
 brew "mkcert"
 brew "mutagen-io/mutagen/mutagen"
 brew "mutagen-io/mutagen/mutagen-compose"
