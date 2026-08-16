@@ -13,11 +13,24 @@ source "$SCRIPT_DIR/libs/term.sh"
 
 RBENV_ROOT="$HOME/.rbenv"
 RUBY_VERSION="3.4.5"
+# Overridable so tests can point at a scratch file instead of the real
+# home/Aptfile.
+APTFILE="${APTFILE:-$REPO_DIR/home/Aptfile}"
+
+if ! APT_PACKAGES_OUTPUT="$(apt_packages_from_file "$APTFILE")"; then
+  pln "$(term_red "Failed to read apt package list from $APTFILE")" >&2
+  exit 1
+fi
 
 APT_DEPS=()
 while IFS= read -r pkg; do
-  APT_DEPS+=("$pkg")
-done < <(apt_packages_from_file "$REPO_DIR/home/Aptfile")
+  [ -n "$pkg" ] && APT_DEPS+=("$pkg")
+done <<< "$APT_PACKAGES_OUTPUT"
+
+if [ "${#APT_DEPS[@]}" -eq 0 ]; then
+  pln "$(term_red "No apt packages found in $APTFILE")" >&2
+  exit 1
+fi
 
 pln "$(term_bold 'Installing apt dependencies')"
 
