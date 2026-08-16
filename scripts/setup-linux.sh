@@ -6,28 +6,39 @@
 # shellcheck disable=SC1091
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+source "$SCRIPT_DIR/libs/apt.sh"
 source "$SCRIPT_DIR/libs/dry_run.sh"
 source "$SCRIPT_DIR/libs/symlink.sh"
 source "$SCRIPT_DIR/libs/term.sh"
 
 RBENV_ROOT="$HOME/.rbenv"
 RUBY_VERSION="3.4.5"
-# Suggested build environment for Ubuntu/Debian/Mint, per
-# https://github.com/rbenv/ruby-build/wiki. If a package like libgdbm6 isn't
-# available on your distro version, try an older alias (e.g. libgdbm5).
-RUBY_BUILD_DEPS=(
-  build-essential autoconf libssl-dev libyaml-dev zlib1g-dev libffi-dev
-  libgmp-dev rustc patch libreadline6-dev libncurses5-dev libgdbm6
-  libgdbm-dev libdb-dev
-)
+# Overridable so tests can point at a scratch file instead of the real
+# home/Aptfile.
+APTFILE="${APTFILE:-$REPO_DIR/home/Aptfile}"
 
-pln "$(term_bold 'Installing Ruby build dependencies')"
+if ! APT_PACKAGES_OUTPUT="$(apt_packages_from_file "$APTFILE")"; then
+  pln "$(term_red "Failed to read apt package list from $APTFILE")" >&2
+  exit 1
+fi
+
+APT_DEPS=()
+while IFS= read -r pkg; do
+  [ -n "$pkg" ] && APT_DEPS+=("$pkg")
+done <<< "$APT_PACKAGES_OUTPUT"
+
+if [ "${#APT_DEPS[@]}" -eq 0 ]; then
+  pln "$(term_red "No apt packages found in $APTFILE")" >&2
+  exit 1
+fi
+
+pln "$(term_bold 'Installing apt dependencies')"
 
 if skip_network_install; then
-  pln "$(term_cyan '[DRY RUN] Would apt-get install Ruby build dependencies:' "${RUBY_BUILD_DEPS[*]}")"
+  pln "$(term_cyan '[DRY RUN] Would apt-get install:' "${APT_DEPS[*]}")"
 else
   sudo apt-get update
-  sudo apt-get install -y "${RUBY_BUILD_DEPS[@]}"
+  sudo apt-get install -y "${APT_DEPS[@]}"
 fi
 
 echo

@@ -55,11 +55,26 @@ teardown() {
   [[ "$output" == *"[DRY RUN] Would symlink $HOME/.config/Code/User/settings.json -> $REPO_DIR/home/dot_config/Code/User/settings.json"* ]]
 }
 
-@test "setup-linux.sh reports dry-run for Ruby build dependencies when SETUP_DRY_RUN is set" {
+@test "setup-linux.sh reports dry-run for apt dependencies when SETUP_DRY_RUN is set" {
   export SETUP_DRY_RUN=1
   run "$SETUP_LINUX_SH"
   [ "$status" -eq 0 ]
-  [[ "$output" == *"Would apt-get install Ruby build dependencies: build-essential autoconf libssl-dev libyaml-dev zlib1g-dev libffi-dev libgmp-dev rustc patch libreadline6-dev libncurses5-dev libgdbm6 libgdbm-dev libdb-dev"* ]]
+  [[ "$output" == *"Would apt-get install: build-essential autoconf libssl-dev libyaml-dev zlib1g-dev libffi-dev libgmp-dev rustc patch libreadline6-dev libncurses5-dev libgdbm6 libgdbm-dev libdb-dev"* ]]
+}
+
+@test "setup-linux.sh fails clearly instead of running apt-get when APTFILE does not exist" {
+  export APTFILE="$TMP/does-not-exist"
+  run "$SETUP_LINUX_SH"
+  [ "$status" -ne 0 ]
+  [[ "$output" == *"Failed to read apt package list from $TMP/does-not-exist"* ]]
+}
+
+@test "setup-linux.sh fails clearly instead of running apt-get when APTFILE has no packages" {
+  printf '# nothing but comments\n' > "$TMP/EmptyAptfile"
+  export APTFILE="$TMP/EmptyAptfile"
+  run "$SETUP_LINUX_SH"
+  [ "$status" -ne 0 ]
+  [[ "$output" == *"No apt packages found in $TMP/EmptyAptfile"* ]]
 }
 
 @test "setup-linux.sh reports dry-run for rbenv install when SETUP_DRY_RUN is set" {
