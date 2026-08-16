@@ -14,18 +14,18 @@ source "$SCRIPT_DIR/libs/term.sh"
 RBENV_ROOT="$HOME/.rbenv"
 RUBY_VERSION="3.4.5"
 
-RUBY_BUILD_DEPS=()
+APT_DEPS=()
 while IFS= read -r pkg; do
-  RUBY_BUILD_DEPS+=("$pkg")
+  APT_DEPS+=("$pkg")
 done < <(apt_packages_from_file "$REPO_DIR/home/Aptfile")
 
-pln "$(term_bold 'Installing Ruby build dependencies')"
+pln "$(term_bold 'Installing apt dependencies')"
 
 if skip_network_install; then
-  pln "$(term_cyan '[DRY RUN] Would apt-get install Ruby build dependencies:' "${RUBY_BUILD_DEPS[*]}")"
+  pln "$(term_cyan '[DRY RUN] Would apt-get install:' "${APT_DEPS[*]}")"
 else
   sudo apt-get update
-  sudo apt-get install -y "${RUBY_BUILD_DEPS[@]}"
+  sudo apt-get install -y "${APT_DEPS[@]}"
 fi
 
 echo
