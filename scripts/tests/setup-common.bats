@@ -6,11 +6,11 @@ setup() {
   SETUP_COMMON_SH="$SCRIPTS_DIR/setup-common.sh"
   TMP="$(mktemp -d)"
   export HOME="$TMP/home"
-  # Skips only the network-fetching installs (rustup/mise), so tests can
+  # Skips only the network-fetching installs (rustup/nvm), so tests can
   # exercise real symlinking without SETUP_DRY_RUN also suppressing it.
   export SETUP_SKIP_NETWORK_INSTALLS=1
   mkdir -p "$HOME"
-  # Strip user-level toolchain dirs (~/.cargo/bin, ~/.local/bin, rbenv/mise
+  # Strip user-level toolchain dirs (~/.cargo/bin, ~/.local/bin, rbenv
   # shims, ...) so the new "already installed" existence checks see a clean
   # machine, not whatever happens to be on the developer's real PATH.
   export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
@@ -48,13 +48,6 @@ teardown() {
   [ "$(readlink "$HOME/.config/git/ignore")" = "$REPO_DIR/home/dot_config/git/ignore" ]
 }
 
-@test "setup-common.sh symlinks .config/mise/config.toml into HOME, creating parent dirs" {
-  run "$SETUP_COMMON_SH"
-  [ "$status" -eq 0 ]
-  [ -L "$HOME/.config/mise/config.toml" ]
-  [ "$(readlink "$HOME/.config/mise/config.toml")" = "$REPO_DIR/home/dot_config/mise/config.toml" ]
-}
-
 @test "setup-common.sh backs up a pre-existing real .bashrc before symlinking over it" {
   printf 'local content' > "$HOME/.bashrc"
 
@@ -78,20 +71,6 @@ teardown() {
   run "$SETUP_COMMON_SH"
   [ "$status" -eq 0 ]
   [[ "$output" == *"Would install rustup from https://sh.rustup.rs"* ]]
-}
-
-@test "setup-common.sh reports dry-run for mise install when SETUP_DRY_RUN is set" {
-  export SETUP_DRY_RUN=1
-  run "$SETUP_COMMON_SH"
-  [ "$status" -eq 0 ]
-  [[ "$output" == *"Would install mise from https://mise.run"* ]]
-}
-
-@test "setup-common.sh reports dry-run for mise-managed tools when SETUP_DRY_RUN is set" {
-  export SETUP_DRY_RUN=1
-  run "$SETUP_COMMON_SH"
-  [ "$status" -eq 0 ]
-  [[ "$output" == *"Would install mise tools globally from $HOME/.config/mise/config.toml"* ]]
 }
 
 @test "setup-common.sh reports dry-run for nvm install when SETUP_DRY_RUN is set" {
@@ -139,18 +118,6 @@ teardown() {
   [ "$status" -eq 0 ]
   [[ "$output" == *"rustup already installed, skipping"* ]]
   [[ "$output" != *"Would install rustup"* ]]
-}
-
-@test "setup-common.sh skips mise install and reports already-installed when mise is already installed" {
-  mkdir -p "$HOME/.local/bin"
-  printf '#!/usr/bin/env bash\n' > "$HOME/.local/bin/mise"
-  chmod +x "$HOME/.local/bin/mise"
-
-  run "$SETUP_COMMON_SH"
-
-  [ "$status" -eq 0 ]
-  [[ "$output" == *"mise already installed, skipping"* ]]
-  [[ "$output" != *"Would install mise from https://mise.run"* ]]
 }
 
 @test "setup-common.sh skips nvm install and reports already-installed when nvm is already installed" {
