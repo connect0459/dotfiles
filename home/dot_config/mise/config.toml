@@ -1,4 +1,0 @@
-[tools]
-gradle = "9.4.1"
-java = "corretto-21.0.11.10.1"
-php = "8.4.23"

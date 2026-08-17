@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Cross-platform setup: symlinks shell rc files from home/ into $HOME,
-# installs rustup, mise, and nvm, then delegates to sync-agents/sync-agents.sh
+# installs rustup and nvm, then delegates to sync-agents/sync-agents.sh
 # for coding-agent config distribution. Safe to re-run.
 
 # shellcheck disable=SC1091
@@ -16,7 +16,6 @@ DOTFILES="
 .bash_profile:.bash_profile
 .bash_aliases:.bash_aliases
 dot_config/git/ignore:.config/git/ignore
-dot_config/mise/config.toml:.config/mise/config.toml
 "
 
 pln "$(term_bold 'Bootstrapping shell dotfiles')"
@@ -40,28 +39,6 @@ elif skip_network_install; then
   pln "$(term_cyan '[DRY RUN] Would install rustup from https://sh.rustup.rs')"
 else
   curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-fi
-
-MISE_BIN="$HOME/.local/bin/mise"
-
-echo
-pln "$(term_bold 'Installing mise')"
-
-if [ -x "$MISE_BIN" ] || command -v mise &> /dev/null; then
-  pln "$(term_cyan 'mise already installed, skipping')"
-elif skip_network_install; then
-  pln "$(term_cyan '[DRY RUN] Would install mise from https://mise.run')"
-else
-  curl https://mise.run | sh
-fi
-
-echo
-pln "$(term_bold 'Installing mise-managed tools globally')"
-
-if skip_network_install; then
-  pln "$(term_cyan '[DRY RUN] Would install mise tools globally from' "$HOME/.config/mise/config.toml")"
-else
-  "$MISE_BIN" install
 fi
 
 NVM_VERSION="v0.40.5"
