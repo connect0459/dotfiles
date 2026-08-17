@@ -94,7 +94,7 @@ export PATH="${PATH}:${HOME}/Library/Android/sdk/platform-tools"
 
 # mise
 export PATH="$HOME/.local/bin:$PATH"
-eval "$(mise activate bash)"
+command -v mise &> /dev/null && eval "$(mise activate bash)"
 
 # moonbit
 export PATH="$HOME/.moon/bin:$PATH"
