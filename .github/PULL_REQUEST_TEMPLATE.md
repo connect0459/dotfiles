@@ -20,11 +20,11 @@ It is difficult to review without knowing the specifications and background.
 
 ## Scope of Change
 
-- [ ] Shell dotfiles (`home/.bashrc` / `home/.bash_profile` / `home/.bash_aliases` / `home/dot_config/`)
+- [ ] Dotfiles under `home/` (shell rc files, `dot_config/`, etc.)
 - [ ] `scripts/sync-agents/` (coding-agent config sync tool)
 - [ ] `scripts/setup.sh` (bootstrap entry point)
 - [ ] Tooling / CI
-- [ ] Documentation (`AGENTS.md` / `README.md`)
+- [ ] Documentation (`AGENTS.md`, `README.md`, and subdirectory READMEs)
 
 ## Breaking Changes
 

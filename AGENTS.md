@@ -15,15 +15,36 @@ Exception: `home/dot_agents/AGENTS.md` and `home/dot_agents/agent-docs/**` are n
 
 ## Project Overview
 
-This is a personal dotfiles repository. `home/` is the canonical source of everything that ends up under `$HOME`: shell rc files under their real names (`home/.bashrc`, `home/.bash_profile`, `home/.bash_aliases`), plus `dot_`-prefixed directories for content that lands one level deeper (`home/dot_config/git/ignore` → `~/.config/git/ignore`, `home/dot_config/Code/User/settings.json` → symlinked to the platform's VS Code user settings path (`~/Library/Application Support/Code/User/settings.json` on macOS, `~/.config/Code/User/settings.json` on Linux), `home/dot_claude/settings.json` → merged into `~/.claude/settings.json`, `home/dot_agents/` → distributed into `~/.agents/` — `AGENTS.md` at the top level, `agent-docs/` as a subdirectory). No GNU Stow or chezmoi. See the root `README.md` for the actual file inventory.
+This is a personal dotfiles repository. `home/` is the canonical source of everything that ends up under `$HOME`, mixing shell rc files under their real dotted names with `dot_`-prefixed directories for content that lands one level deeper. No GNU Stow or chezmoi. See the root `README.md` for the actual file inventory and the Directory naming convention below for the naming rule.
 
-`scripts/` holds every automation script this repo ships, each paired with its own tests (`scripts/tests/` for `setup.sh`). `scripts/setup.sh` symlinks the plain dotfiles from `home/` into `$HOME`, then delegates to `scripts/sync-agents/sync-agents.sh` for the coding-agent config distribution: it copies `home/dot_agents/AGENTS.md` into `~/.agents/AGENTS.md` and syncs `home/dot_agents/agent-docs/**` into `~/.agents/agent-docs/`, symlinks `~/.claude/CLAUDE.md` and `~/.github/copilot-instructions.md` to the former, and merges `home/dot_claude/settings.json` into `~/.claude/settings.json` — see `scripts/sync-agents/README.md` for details.
+`scripts/` holds every automation script this repo ships, each paired with its own tests. `scripts/setup.sh` is the entry point — it symlinks the plain dotfiles from `home/` into `$HOME`, then delegates to `scripts/sync-agents/sync-agents.sh` for the coding-agent config distribution. See `scripts/sync-agents/README.md` for what that covers.
+
+## Development Philosophy
+
+### Red/Green TDD (Detroit school)
+
+- Shell logic is tested with `bats-core`.
+- Red → Green → Refactor cycle strictly followed: write the failing test first, then implement.
+- Use real filesystem operations (via `mktemp -d` fixtures) rather than mocks — the scripts' entire job is filesystem side effects, so mocking them would remove what's being verified.
+- Discuss coverage targets with the user before starting implementation.
+
+### Evergreen Tests
+
+- Test names describe WHAT behavior is being verified, not HOW.
+- Error messages describe a concrete operation or state, not the name of the function/script that produced them; renaming that function must never obligate an error-string edit.
+- Test code serves as living documentation of the system's behavior.
+
+### Code Comments
+
+- Do NOT write code comments unless explicitly permitted by the user.
+- Let the code speak for itself; let tests document the behavior.
+- Code = How, Tests = What, Commit messages = Why.
 
 ## Conventions
 
 ### Directory naming
 
-- A directory gets the `dot_foo` prefix (underscore, not a literal leading dot) when its contents are symlinked, physically copied, or merged onto a real path one level under `$HOME` — as `home/dot_claude/settings.json` is, via a merge into `~/.claude/settings.json`, and `home/dot_agents/` is, via `scripts/sync-agents/sync-agents.sh` distributing it into `~/.agents/` and symlinking `~/.agents/AGENTS.md` into `~/.claude/CLAUDE.md`.
+- A directory gets the `dot_foo` prefix (underscore, not a literal leading dot) when its contents are symlinked, physically copied, or merged onto a real path one level under `$HOME` — e.g. `home/dot_config/` → `~/.config/`.
 - A file that is itself the direct symlink target keeps its real dotted name instead (e.g. `home/.bashrc`, not `home/dot_bashrc`).
 - Content that is not itself a hidden-path target (tooling, documentation, source scripts) uses a plain name — do not prefix it with `dot_`.
 
@@ -33,12 +54,7 @@ This is a personal dotfiles repository. `home/` is the canonical source of every
 - Every script under `lib/` must pass `shellcheck` with no warnings.
 - Prefer POSIX/portable tools already present on macOS (`find`, `shasum`, `awk`) over adding new runtime dependencies. `jq` is the one accepted exception, used by `permissions.sh` for JSON merging — no reasonable POSIX-only equivalent exists for that job. Don't introduce further runtime dependencies without the same bar (YAGNI).
 
-### Testing
-
-- Shell logic is tested with `bats-core`. Follow Red → Green: write the failing `.bats` test first, then implement.
-- Tests exercise real filesystem operations (via `mktemp -d` fixtures) rather than mocking — the scripts' entire job is filesystem side effects, so mocking them would remove what's being verified.
-
-### Git
+## Git Conventions
 
 - Conventional Commits in English.
 - Branch naming: `feat/xxx`, `fix/xxx`, `docs/xxx`, `chore/xxx` — matching the Conventional Commits type used in the branch's commits.
