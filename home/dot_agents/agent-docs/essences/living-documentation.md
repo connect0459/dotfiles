@@ -131,7 +131,7 @@ func GetUsers() []User { ... }
 ```text
 <type>: <subject（命令形・50文字以内）>
 
-<body: WHY を記述・72文字で改行>
+<body: WHY を記述>
 ```
 
 主要 type: `feat` / `fix` / `docs` / `refactor` / `tidy` / `test` / `chore`
