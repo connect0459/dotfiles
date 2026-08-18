@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Parses a plain-text apt package list (see home/Aptfile): one package per
+# Parses a plain-text apt package list (see home/Aptfile.txt): one package per
 # line, blank lines and #-prefixed comments ignored. Keeps apt package
 # declarations data rather than logic, mirroring how Brewfile keeps brew's
 # packages declarative.

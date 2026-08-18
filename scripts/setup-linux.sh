@@ -14,8 +14,8 @@ source "$SCRIPT_DIR/libs/term.sh"
 RBENV_ROOT="$HOME/.rbenv"
 RUBY_VERSION="3.4.5"
 # Overridable so tests can point at a scratch file instead of the real
-# home/Aptfile.
-APTFILE="${APTFILE:-$REPO_DIR/home/Aptfile}"
+# home/Aptfile.txt
+APTFILE="${APTFILE:-$REPO_DIR/home/Aptfile.txt}"
 
 if ! APT_PACKAGES_OUTPUT="$(apt_packages_from_file "$APTFILE")"; then
   pln "$(term_red "Failed to read apt package list from $APTFILE")" >&2
