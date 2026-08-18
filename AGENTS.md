@@ -19,6 +19,27 @@ This is a personal dotfiles repository. `home/` is the canonical source of every
 
 `scripts/` holds every automation script this repo ships, each paired with its own tests. `scripts/setup.sh` is the entry point — it symlinks the plain dotfiles from `home/` into `$HOME`, then delegates to `scripts/sync-agents/sync-agents.sh` for the coding-agent config distribution. See `scripts/sync-agents/README.md` for what that covers.
 
+## Development Philosophy
+
+### Red/Green TDD (Detroit school)
+
+- Shell logic is tested with `bats-core`.
+- Red → Green → Refactor cycle strictly followed: write the failing test first, then implement.
+- Use real filesystem operations (via `mktemp -d` fixtures) rather than mocks — the scripts' entire job is filesystem side effects, so mocking them would remove what's being verified.
+- Discuss coverage targets with the user before starting implementation.
+
+### Evergreen Tests
+
+- Test names describe WHAT behavior is being verified, not HOW.
+- Error messages describe a concrete operation or state, not the name of the function/script that produced them; renaming that function must never obligate an error-string edit.
+- Test code serves as living documentation of the system's behavior.
+
+### Code Comments
+
+- Do NOT write code comments unless explicitly permitted by the user.
+- Let the code speak for itself; let tests document the behavior.
+- Code = How, Tests = What, Commit messages = Why.
+
 ## Conventions
 
 ### Directory naming
@@ -33,12 +54,7 @@ This is a personal dotfiles repository. `home/` is the canonical source of every
 - Every script under `lib/` must pass `shellcheck` with no warnings.
 - Prefer POSIX/portable tools already present on macOS (`find`, `shasum`, `awk`) over adding new runtime dependencies. `jq` is the one accepted exception, used by `permissions.sh` for JSON merging — no reasonable POSIX-only equivalent exists for that job. Don't introduce further runtime dependencies without the same bar (YAGNI).
 
-### Testing
-
-- Shell logic is tested with `bats-core`. Follow Red → Green: write the failing `.bats` test first, then implement.
-- Tests exercise real filesystem operations (via `mktemp -d` fixtures) rather than mocking — the scripts' entire job is filesystem side effects, so mocking them would remove what's being verified.
-
-### Git
+## Git Conventions
 
 - Conventional Commits in English.
 - Branch naming: `feat/xxx`, `fix/xxx`, `docs/xxx`, `chore/xxx` — matching the Conventional Commits type used in the branch's commits.
