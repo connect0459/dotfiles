@@ -10,12 +10,8 @@ Reference material for this machine's Colima setup. Colima and Docker themselves
 
 `~/.colima/default/colima.yaml` is not tracked directly, for two reasons:
 
-- **Values are machine-specific.** `disk`, `cpu`, and `memory` should be
-  sized against each host's actual free space and resources, not fixed to
-  one machine's numbers.
-- **Colima rewrites the file at runtime.** It fills in defaults and can
-  drop or reorder comments on write. Symlinking it into this repo would
-  mean colima's own runtime behavior dirties a tracked file.
+- **Values are machine-specific.** `disk`, `cpu`, and `memory` should be sized against each host's actual free space and resources, not fixed to one machine's numbers.
+- **Colima rewrites the file at runtime.** It fills in defaults and can drop or reorder comments on write. Symlinking it into this repo would mean colima's own runtime behavior dirties a tracked file.
 
 `colima.example.yaml` is a plain reference file instead: copy the values you want into `~/.colima/default/colima.yaml` by hand (or via `colima start --edit`), adjusting for the current host.
 
