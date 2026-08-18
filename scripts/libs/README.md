@@ -24,6 +24,6 @@ Shared shell helpers with no ties to a single subsystem — used by the top-leve
 ## Running tests
 
 ```sh
-bats scripts/tests/apt.bats scripts/tests/dry_run.bats scripts/tests/symlink.bats scripts/tests/term.bats
+bats scripts/tests/*.bats
 shellcheck scripts/libs/*.sh
 ```
