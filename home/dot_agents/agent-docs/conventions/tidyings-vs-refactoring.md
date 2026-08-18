@@ -189,8 +189,7 @@ This improves testability and follows DDD principles."
 ### Q: TDD中のRefactorステップはどちら？
 
 **A**: TDDのRefactorステップは**Tidyings**に近いです。
-テストが通った後の小さな改善を行います。大きな構造変更が必要な場合は、
-別途Refactoringとして計画してください。
+テストが通った後の小さな改善を行います。大きな構造変更が必要な場合は、別途Refactoringとして計画してください。
 
 ## Coding Agentとの協働
 

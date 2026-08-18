@@ -32,8 +32,7 @@ It is difficult to review without knowing the specifications and background.
 - [ ] Breaking changes (describe below)
 
 <!--
-If this changes an existing symlink target, or moves/removes a tracked
-dotfile, describe what breaks and why the breakage is justified.
+If this changes an existing symlink target, or moves/removes a tracked dotfile, describe what breaks and why the breakage is justified.
 -->
 
 ## Deferred Items and TODOs
