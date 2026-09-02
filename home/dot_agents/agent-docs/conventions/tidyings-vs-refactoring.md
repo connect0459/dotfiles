@@ -2,8 +2,7 @@
 
 ## 概要
 
-Kent Beckが提唱するTidyingsの概念を取り入れ、リファクタリングの意味を明確に区別します。
-適切な判断基準により、効率的で安全なコード改善を実現します。
+Kent Beckが提唱するTidyingsの概念を取り入れ、リファクタリングの意味を明確に区別します。適切な判断基準により、効率的で安全なコード改善を実現します。
 
 ## 境界づけられたコンテキスト
 
@@ -179,8 +178,7 @@ This improves testability and follows DDD principles."
 
 ### Q: 3分かかりそうな改善はどうする？
 
-**A**: Refactoringとして扱い、計画を立ててから実施してください。
-2分ルールは厳密ではありませんが、判断基準として有効です。
+**A**: Refactoringとして扱い、計画を立ててから実施してください。2分ルールは厳密ではありませんが、判断基準として有効です。
 
 ### Q: Tidying中に大きな問題を発見したら？
 
@@ -188,8 +186,7 @@ This improves testability and follows DDD principles."
 
 ### Q: TDD中のRefactorステップはどちら？
 
-**A**: TDDのRefactorステップは**Tidyings**に近いです。
-テストが通った後の小さな改善を行います。大きな構造変更が必要な場合は、別途Refactoringとして計画してください。
+**A**: TDDのRefactorステップは**Tidyings**に近いです。テストが通った後の小さな改善を行います。大きな構造変更が必要な場合は、別途Refactoringとして計画してください。
 
 ## Coding Agentとの協働
 

@@ -2,8 +2,7 @@
 
 ## 概要
 
-フロントエンド開発では、Package by Featuresパターンでの構成を基本とします。
-機能（feature）ごとにコードを整理し、関連するロジックを凝集させます。
+フロントエンド開発では、Package by Featuresパターンでの構成を基本とします。機能（feature）ごとにコードを整理し、関連するロジックを凝集させます。
 
 ## 基本構造
 
@@ -142,5 +141,4 @@ export type { User } from './types/user'
 
 ## Package by Features + オニオンアーキテクチャ
 
-大規模なフロントエンドでは、feature内でオニオンアーキテクチャを採用することも検討できます。
-詳細は `agent-docs/architecture/onion-architecture.md` を参照してください。
+大規模なフロントエンドでは、feature内でオニオンアーキテクチャを採用することも検討できます。詳細は `agent-docs/architecture/onion-architecture.md` を参照してください。

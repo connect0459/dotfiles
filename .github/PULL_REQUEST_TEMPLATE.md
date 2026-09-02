@@ -40,9 +40,7 @@ If this changes an existing symlink target, or moves/removes a tracked dotfile, 
 - Items intentionally deferred and the reasons why.
 
 ```txt
-If you deferred something due to time constraints, document it here.
-Reviewers cannot tell whether something was intentionally skipped or overlooked
-without this information.
+If you deferred something due to time constraints, document it here. Reviewers cannot tell whether something was intentionally skipped or overlooked without this information.
 ```
 
 ## Test Items

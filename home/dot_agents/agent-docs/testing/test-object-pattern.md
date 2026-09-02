@@ -2,8 +2,7 @@
 
 ## 概要
 
-Test Object Patternは、テストに必要なデータと設定を構造体で管理するパターンです。
-テストコードの可読性と保守性を向上させ、Living Documentationとして機能させます。
+Test Object Patternは、テストに必要なデータと設定を構造体で管理するパターンです。テストコードの可読性と保守性を向上させ、Living Documentationとして機能させます。
 
 ## 基本構造（Go）
 
