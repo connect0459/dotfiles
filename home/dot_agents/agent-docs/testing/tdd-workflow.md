@@ -172,8 +172,7 @@ func TestUserService(t *testing.T) {
 
 ## カバレッジ目標
 
-実装開始前に必ずユーザーとカバレッジ目標を協議し、定量的な指標を設定します。
-詳細は `agent-docs/testing/coverage-goals.md` を参照してください。
+実装開始前に必ずユーザーとカバレッジ目標を協議し、定量的な指標を設定します。詳細は `agent-docs/testing/coverage-goals.md` を参照してください。
 
 ## 構造化テスト設計
 

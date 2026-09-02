@@ -35,18 +35,8 @@ Reference material for this machine's Docker CLI configuration. `docker` and `do
 
 `~/.docker/config.json` is not tracked directly, for two reasons:
 
-- **`cliPluginsExtraDirs` is machine-specific.** The path is Homebrew's
-  `lib/docker/cli-plugins` directory, which differs by CPU architecture:
-  `/opt/homebrew` on Apple Silicon, `/usr/local` on Intel. Run `brew --prefix`
-  on the target host and adjust the path before copying.
-- **`auths` accumulates machine-specific, sensitive state.** `docker login`
-  writes registry credentials into this file. With no `credsStore` /
-  `credHelpers` configured, those credentials are stored as plain
-  base64 (not encrypted) directly in `config.json`. Before running `docker
-  login`, consider installing a credential helper (e.g. `docker-credential-helper`
-  for macOS Keychain via `osxkeychain`) and setting `credsStore` accordingly —
-  otherwise treat any `auths` entries in your live `config.json` as sensitive
-  and never copy them back into this template.
+- **`cliPluginsExtraDirs` is machine-specific.** The path is Homebrew's `lib/docker/cli-plugins` directory, which differs by CPU architecture: `/opt/homebrew` on Apple Silicon, `/usr/local` on Intel. Run `brew --prefix` on the target host and adjust the path before copying.
+- **`auths` accumulates machine-specific, sensitive state.** `docker login` writes registry credentials into this file. With no `credsStore` / `credHelpers` configured, those credentials are stored as plain base64 (not encrypted) directly in `config.json`. Before running `docker login`, consider installing a credential helper (e.g. `docker-credential-helper` for macOS Keychain via `osxkeychain`) and setting `credsStore` accordingly — otherwise treat any `auths` entries in your live `config.json` as sensitive and never copy them back into this template.
 
 `config.json` is a plain reference file instead: copy the values you want into `~/.docker/config.json` by hand, adjusting `cliPluginsExtraDirs` for the current host's Homebrew prefix.
 

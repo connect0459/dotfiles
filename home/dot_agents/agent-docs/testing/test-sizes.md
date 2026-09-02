@@ -2,8 +2,7 @@
 
 ## テストサイズの定義
 
-Google Testing Blog 発の Small / Medium / Large による分類を共通語彙として使う。
-「ユニットテスト」「インテグレーションテスト」「E2Eテスト」はチームによって指す範囲がブレやすいが、テストサイズは「何に依存するか」で分類するため認識がブレにくい。
+Google Testing Blog 発の Small / Medium / Large による分類を共通語彙として使う。「ユニットテスト」「インテグレーションテスト」「E2Eテスト」はチームによって指す範囲がブレやすいが、テストサイズは「何に依存するか」で分類するため認識がブレにくい。
 
 参考: <https://testing.googleblog.com/2010/12/test-sizes.html>
 
