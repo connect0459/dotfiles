@@ -20,6 +20,7 @@ brew "shellcheck"
 # Container and sync
 brew "colima"
 brew "docker"
+brew "docker-compose"
 brew "mutagen-io/mutagen/mutagen"
 brew "mutagen-io/mutagen/mutagen-compose"
 
