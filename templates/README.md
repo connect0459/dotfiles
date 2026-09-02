@@ -30,3 +30,30 @@ scripts/colima/colima-cleanup.sh
 ```
 
 periodically (see `scripts/colima/colima-cleanup.sh --help`) to reclaim it via `docker system prune` + `fstrim`, rather than waiting until the host disk is nearly full.
+
+## docker
+
+Reference material for this machine's Docker CLI configuration. `docker` and `docker-compose` themselves are installed via `home/Brewfile`.
+
+### Why `config.json` isn't a symlinked dotfile
+
+`~/.docker/config.json` is not tracked directly, for two reasons:
+
+- **`cliPluginsExtraDirs` is machine-specific.** The path is Homebrew's
+  `lib/docker/cli-plugins` directory, which differs by CPU architecture:
+  `/opt/homebrew` on Apple Silicon, `/usr/local` on Intel. Run `brew --prefix`
+  on the target host and adjust the path before copying.
+- **`auths` accumulates machine-specific, sensitive state.** `docker login`
+  writes registry credentials into this file. With no `credsStore` /
+  `credHelpers` configured, those credentials are stored as plain
+  base64 (not encrypted) directly in `config.json`. Before running `docker
+  login`, consider installing a credential helper (e.g. `docker-credential-helper`
+  for macOS Keychain via `osxkeychain`) and setting `credsStore` accordingly —
+  otherwise treat any `auths` entries in your live `config.json` as sensitive
+  and never copy them back into this template.
+
+`config.json` is a plain reference file instead: copy the values you want into `~/.docker/config.json` by hand, adjusting `cliPluginsExtraDirs` for the current host's Homebrew prefix.
+
+### Context prerequisite
+
+`currentContext: "colima"` assumes the `colima` context already exists, which only happens after `colima start` has been run at least once. Setting this before starting Colima causes every `docker` command to fail with a `context not found` error.
