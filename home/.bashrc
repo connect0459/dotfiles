@@ -85,7 +85,7 @@ ssh_agent_setup
 # cargo
 . "$HOME/.cargo/env"
 
-# ecnavi-enquete-app-android
+# for Android SDK
 export PATH="${PATH}:${HOME}/Library/Android/sdk/emulator"
 export PATH="${PATH}:${HOME}/Library/Android/sdk/platform-tools"
 
