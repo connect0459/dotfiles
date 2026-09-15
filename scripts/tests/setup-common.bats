@@ -59,11 +59,11 @@ teardown() {
   [ "$(cat "$HOME/.bashrc.bak")" = "local content" ]
 }
 
-@test "setup-common.sh delegates to sync-agents.sh for coding-agent config distribution" {
+@test "setup-common.sh does not sync coding-agent configuration on its own" {
   run "$SETUP_COMMON_SH"
   [ "$status" -eq 0 ]
-  [ -L "$HOME/.claude/CLAUDE.md" ]
-  [ -f "$HOME/.agents/AGENTS.md" ]
+  [ ! -e "$HOME/.claude/CLAUDE.md" ]
+  [ ! -e "$HOME/.agents/AGENTS.md" ]
 }
 
 @test "setup-common.sh reports dry-run for rustup install when SETUP_DRY_RUN is set" {

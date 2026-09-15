@@ -22,6 +22,11 @@ permissions_merge() {
   local source_path="$1" target_path="$2"
   local target_tmp
 
+  if ! command -v jq >/dev/null 2>&1; then
+    echo "permissions_merge: jq command not found" >&2
+    return 1
+  fi
+
   if [ ! -f "$source_path" ] || ! jq empty "$source_path" >/dev/null 2>&1; then
     echo "permissions_merge: invalid or missing source JSON: $source_path" >&2
     return 1

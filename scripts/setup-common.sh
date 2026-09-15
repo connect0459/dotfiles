@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
-# Cross-platform setup: symlinks shell rc files from home/ into $HOME,
-# installs rustup and nvm, then delegates to sync-agents/sync-agents.sh
-# for coding-agent config distribution. Safe to re-run.
+# Cross-platform setup: symlinks shell rc files from home/ into $HOME, then
+# installs rustup and nvm. Safe to re-run.
 
 # shellcheck disable=SC1091
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -66,6 +65,3 @@ else
   nvm install "$NODE_VERSION"
   nvm alias default "$NODE_VERSION"
 fi
-
-echo
-exec "$SCRIPT_DIR/sync-agents/sync-agents.sh"
