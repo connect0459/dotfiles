@@ -131,3 +131,20 @@ teardown() {
   [ "$status" -ne 0 ]
   [ "$(jq -r '.theme' "$TMP/target.json")" = "dark" ]
 }
+
+@test "merge reports a distinct error instead of 'invalid JSON' when jq itself is not installed" {
+  FAKE_BIN="$TMP/fakebin"
+  mkdir -p "$FAKE_BIN"
+  for bin in mktemp cp mv rm; do
+    ln -s "$(command -v "$bin")" "$FAKE_BIN/$bin"
+  done
+  printf '{"permissions": {"allow": ["read"]}}' > "$TMP/source.json"
+  printf '{"theme": "dark"}' > "$TMP/target.json"
+
+  PATH="$FAKE_BIN" run permissions_merge "$TMP/source.json" "$TMP/target.json"
+
+  [ "$status" -ne 0 ]
+  [[ "$output" == *"jq command not found"* ]]
+  [[ "$output" != *"invalid or missing source JSON"* ]]
+  [ "$(jq -r '.theme' "$TMP/target.json")" = "dark" ]
+}
