@@ -62,6 +62,38 @@ teardown() {
   [ -f "$HOME/.agents/AGENTS.md" ]
 }
 
+@test "setup.sh installs apt dependencies before syncing coding-agent configuration on Linux" {
+  if [ "$(uname -s)" != "Linux" ]; then
+    skip "Linux only — setup.sh delegates to setup-macos.sh on this platform"
+  fi
+
+  run "$SETUP_SH"
+  [ "$status" -eq 0 ]
+
+  apt_line="$(printf '%s\n' "$output" | grep -n 'Would apt-get install' | head -1 | cut -d: -f1)"
+  sync_line="$(printf '%s\n' "$output" | grep -n 'Coding agents configuration sync tool' | head -1 | cut -d: -f1)"
+
+  [ -n "$apt_line" ]
+  [ -n "$sync_line" ]
+  [ "$apt_line" -lt "$sync_line" ]
+}
+
+@test "setup.sh installs Brewfile dependencies before syncing coding-agent configuration on macOS" {
+  if [ "$(uname -s)" != "Darwin" ]; then
+    skip "macOS only — setup.sh delegates to setup-linux.sh on this platform"
+  fi
+
+  run "$SETUP_SH"
+  [ "$status" -eq 0 ]
+
+  brew_line="$(printf '%s\n' "$output" | grep -n 'Installing macOS dependencies from Brewfile' | head -1 | cut -d: -f1)"
+  sync_line="$(printf '%s\n' "$output" | grep -n 'Coding agents configuration sync tool' | head -1 | cut -d: -f1)"
+
+  [ -n "$brew_line" ]
+  [ -n "$sync_line" ]
+  [ "$brew_line" -lt "$sync_line" ]
+}
+
 @test "setup.sh symlinks VS Code settings.json into HOME on macOS" {
   if [ "$(uname -s)" != "Darwin" ]; then
     skip "macOS only — setup.sh delegates to setup-linux.sh on this platform"

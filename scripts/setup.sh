@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 # Bootstraps a fresh clone of this repo: delegates to setup-common.sh for
-# shell rc file symlinking and agent config distribution, then to a
-# platform-specific setup script if applicable. Safe to re-run.
+# shell rc file symlinking, then to a platform-specific setup script if
+# applicable, then to sync-agents.sh for agent config distribution -- run
+# last so its jq dependency is already installed by the platform-specific
+# script's apt/brew step. Safe to re-run.
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 # shellcheck disable=SC1091
@@ -22,6 +24,9 @@ case "$OS" in
     fi
     ;;
 esac
+
+echo
+"$SCRIPT_DIR/sync-agents/sync-agents.sh" || exit 1
 
 echo
 pln "$(term_bold_green 'Setup complete!')"
