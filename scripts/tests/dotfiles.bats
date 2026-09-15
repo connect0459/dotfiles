@@ -39,3 +39,33 @@ setup() {
   [[ "$output" != *"No such file or directory"* ]]
   [[ "$output" != *"/opt/homebrew"* ]]
 }
+
+@test "home/.bash_profile does not error when ~/.local/bin/env does not exist" {
+  TMP="$(mktemp -d)"
+  HOME_DIR="$TMP/home"
+  mkdir -p "$HOME_DIR/.cargo"
+  touch "$HOME_DIR/.bashrc" "$HOME_DIR/.cargo/env"
+
+  run env -i HOME="$HOME_DIR" PATH="/usr/bin:/bin" \
+    bash -c "source '$REPO_DIR/home/.bash_profile'"
+
+  rm -rf "$TMP"
+
+  [ "$status" -eq 0 ]
+  [[ "$output" != *"No such file or directory"* ]]
+}
+
+@test "home/.bash_profile does not error when ~/.cargo/env does not exist" {
+  TMP="$(mktemp -d)"
+  HOME_DIR="$TMP/home"
+  mkdir -p "$HOME_DIR/.local/bin"
+  touch "$HOME_DIR/.bashrc" "$HOME_DIR/.local/bin/env"
+
+  run env -i HOME="$HOME_DIR" PATH="/usr/bin:/bin" \
+    bash -c "source '$REPO_DIR/home/.bash_profile'"
+
+  rm -rf "$TMP"
+
+  [ "$status" -eq 0 ]
+  [[ "$output" != *"No such file or directory"* ]]
+}

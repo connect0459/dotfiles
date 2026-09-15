@@ -11,10 +11,14 @@ if [ -f ~/.bashrc ]; then
     . ~/.bashrc
 fi
 
-. "$HOME/.local/bin/env"
+if [ -f "$HOME/.local/bin/env" ]; then
+    . "$HOME/.local/bin/env"
+fi
 
 # cargo
-. "$HOME/.cargo/env"
+if [ -f "$HOME/.cargo/env" ]; then
+    . "$HOME/.cargo/env"
+fi
 
 # Starting Colima
 if command -v colima &> /dev/null; then
