@@ -1,3 +1,9 @@
+# Dev tools
+bats
+jq
+just
+shellcheck
+
 # Ruby build dependencies for rbenv/ruby-build, per
 # https://github.com/rbenv/ruby-build/wiki. If a package like libgdbm6 isn't
 # available on your distro version, try an older alias (e.g. libgdbm5).
