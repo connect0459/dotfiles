@@ -2,6 +2,7 @@
 bats
 jq
 just
+pre-commit
 shellcheck
 
 # Ruby build dependencies for rbenv/ruby-build, per

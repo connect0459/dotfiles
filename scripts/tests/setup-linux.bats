@@ -59,7 +59,7 @@ teardown() {
   export SETUP_DRY_RUN=1
   run "$SETUP_LINUX_SH"
   [ "$status" -eq 0 ]
-  [[ "$output" == *"Would apt-get install: bats jq just shellcheck build-essential autoconf libssl-dev libyaml-dev zlib1g-dev libffi-dev libgmp-dev rustc patch libreadline6-dev libncurses5-dev libgdbm6 libgdbm-dev libdb-dev"* ]]
+  [[ "$output" == *"Would apt-get install: bats jq just pre-commit shellcheck build-essential autoconf libssl-dev libyaml-dev zlib1g-dev libffi-dev libgmp-dev rustc patch libreadline6-dev libncurses5-dev libgdbm6 libgdbm-dev libdb-dev"* ]]
 }
 
 @test "setup-linux.sh fails clearly instead of running apt-get when APTFILE does not exist" {
