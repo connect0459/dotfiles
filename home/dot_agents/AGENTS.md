@@ -71,6 +71,7 @@
 - **記述原則**: コードにHow、テストにWhat、コミットログにWhy
 - **コードコメント**: **基本的に書かない** 。書く場合はユーザーの明示的な許可が必要
   - コードコメント規約の詳細: `~/.agents/agent-docs/conventions/code-comments.md`
+- **コミット type**: `feat` / `fix` はソースコードに対する操作を表す。`fix(deps)` / `fix(ci)` などは原則禁止とし、依存関係は `chore` / `build`、CI は `ci` など、プロジェクトで使われている prefix を優先する
 
 ## 協働ルール
 
