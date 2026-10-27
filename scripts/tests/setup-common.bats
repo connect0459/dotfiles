@@ -84,7 +84,7 @@ teardown() {
   export SETUP_DRY_RUN=1
   run "$SETUP_COMMON_SH"
   [ "$status" -eq 0 ]
-  [[ "$output" == *"Would install Node 24.15.0 via nvm and set it as the default"* ]]
+  [[ "$output" == *"Would install Node 24.22 via nvm and set it as the default"* ]]
 }
 
 @test "setup-common.sh prints a dry-run message for symlinking a dotfile and does not create it when SETUP_DRY_RUN is set" {
@@ -129,4 +129,55 @@ teardown() {
   [ "$status" -eq 0 ]
   [[ "$output" == *"nvm already installed, skipping"* ]]
   [[ "$output" != *"Would install nvm v0.40.5"* ]]
+}
+
+@test "setup-common.sh installs the latest patch of the pinned Node minor and sets it as the nvm default" {
+  unset SETUP_SKIP_NETWORK_INSTALLS
+  FAKE_BIN="$TMP/fakebin"
+  mkdir -p "$FAKE_BIN" "$HOME/.nvm"
+  printf '#!/usr/bin/env bash\n' > "$FAKE_BIN/rustup"
+  chmod +x "$FAKE_BIN/rustup"
+  export PATH="$FAKE_BIN:$PATH"
+  export NVM_CALLS="$TMP/nvm-calls"
+  cat > "$HOME/.nvm/nvm.sh" <<'STUB'
+nvm() {
+  printf '%s\n' "$*" >> "$NVM_CALLS"
+  if [ "$1" = "version-remote" ]; then
+    echo "v24.22.9"
+  fi
+}
+STUB
+
+  run "$SETUP_COMMON_SH"
+
+  [ "$status" -eq 0 ]
+  grep -qx "version-remote 24.22" "$NVM_CALLS"
+  grep -qx "install v24.22.9" "$NVM_CALLS"
+  grep -qx "alias default v24.22.9" "$NVM_CALLS"
+}
+
+@test "setup-common.sh aborts without installing Node or changing the nvm default when the latest release cannot be resolved" {
+  unset SETUP_SKIP_NETWORK_INSTALLS
+  FAKE_BIN="$TMP/fakebin"
+  mkdir -p "$FAKE_BIN" "$HOME/.nvm"
+  printf '#!/usr/bin/env bash\n' > "$FAKE_BIN/rustup"
+  chmod +x "$FAKE_BIN/rustup"
+  export PATH="$FAKE_BIN:$PATH"
+  export NVM_CALLS="$TMP/nvm-calls"
+  cat > "$HOME/.nvm/nvm.sh" <<'STUB'
+nvm() {
+  printf '%s\n' "$*" >> "$NVM_CALLS"
+  if [ "$1" = "version-remote" ]; then
+    echo "N/A"
+    return 3
+  fi
+}
+STUB
+
+  run --separate-stderr "$SETUP_COMMON_SH"
+
+  [ "$status" -ne 0 ]
+  [[ "$stderr" == *"Failed to resolve the latest Node 24.22 release from the nvm remote index"* ]]
+  ! grep -q "^install" "$NVM_CALLS"
+  ! grep -q "^alias" "$NVM_CALLS"
 }
