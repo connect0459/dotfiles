@@ -62,7 +62,10 @@ if skip_network_install; then
   pln "$(term_cyan '[DRY RUN] Would install Node' "$NODE_VERSION" 'via nvm and set it as the default')"
 else
   . "$NVM_DIR/nvm.sh"
-  latest_node="$(nvm version-remote "$NODE_VERSION")"
+  if ! latest_node="$(nvm version-remote "$NODE_VERSION")"; then
+    pln "$(term_red "Failed to resolve the latest Node $NODE_VERSION release from the nvm remote index")" >&2
+    exit 1
+  fi
   nvm install "$latest_node"
   nvm alias default "$latest_node"
 fi
