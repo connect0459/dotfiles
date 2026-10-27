@@ -36,3 +36,18 @@ brew "ruby-build"
 # Utilities
 brew "ffmpeg"
 brew "nkf"
+
+# Casks: development
+cask "android-studio"
+cask "rancher"
+cask "visual-studio-code"
+
+# Casks: browsers
+cask "google-chrome"
+
+# Casks: communication
+cask "slack"
+cask "zoom"
+
+# Casks: media
+cask "obs"
