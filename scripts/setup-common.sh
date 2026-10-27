@@ -42,7 +42,7 @@ fi
 
 NVM_VERSION="v0.40.5"
 NVM_DIR="$HOME/.nvm"
-NODE_VERSION="24.15.0"
+NODE_VERSION="24.22"
 
 echo
 pln "$(term_bold 'Installing nvm')"
@@ -62,6 +62,7 @@ if skip_network_install; then
   pln "$(term_cyan '[DRY RUN] Would install Node' "$NODE_VERSION" 'via nvm and set it as the default')"
 else
   . "$NVM_DIR/nvm.sh"
-  nvm install "$NODE_VERSION"
-  nvm alias default "$NODE_VERSION"
+  latest_node="$(nvm version-remote "$NODE_VERSION")"
+  nvm install "$latest_node"
+  nvm alias default "$latest_node"
 fi
