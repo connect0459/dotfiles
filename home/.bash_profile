@@ -32,6 +32,11 @@ export PATH="$HOME/bin:$PATH"
 # AWS
 export AWS_SESSION_TOKEN_TTL=12h
 
+# PostgreSQL client (libpq is keg-only)
+if [ -d /opt/homebrew/opt/libpq/bin ]; then
+    export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
+fi
+
 # Android SDK tools
 if [ -d /opt/homebrew/share/android-commandlinetools ]; then
     export PATH="/opt/homebrew/share/android-commandlinetools/emulator:/opt/homebrew/share/android-commandlinetools/platform-tools:$PATH"

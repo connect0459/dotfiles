@@ -11,6 +11,7 @@ brew "ca-certificates"
 brew "gh"
 brew "jq"
 brew "just"
+brew "libpq" # for `psql`
 brew "librsvg" # for `rsvg-convert`
 brew "microsoft/apm/apm"
 brew "mkcert"
