@@ -99,6 +99,9 @@
 1. システム破壊コマンドの独断実行（`rm -rf`等）
 2. レイヤー間の直接依存（抽象型経由を優先）
 3. 機密情報のハードコーディング
+4. Issue/PRの文章内で、`Closes #123` のようなハッシュ形式による言及
+   - 他リポジトリのIssue等を指したつもりでも、GitHub上では同一リポジトリの別Issueとして解決されてしまうため
+   - 常にフルのGitHub URLで言及する（例: `<https://github.com/owner/repo/issues/123>`）
 
 ### 設計原則（Design Principles）
 
