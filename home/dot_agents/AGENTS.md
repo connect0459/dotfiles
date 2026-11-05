@@ -73,6 +73,13 @@
   - コードコメント規約の詳細: `~/.agents/agent-docs/conventions/code-comments.md`
 - **コミット type**: `feat` / `fix` はソースコードに対する操作を表す。`fix(deps)` / `fix(ci)` などは原則禁止とし、依存関係は `chore` / `build`、CI は `ci` など、プロジェクトで使われている prefix を優先する
 
+### 日本語の文章
+
+- **句点の一貫性**: 日本語の文章を書く際、句点（。）をつけるなら全ての文末に一律でつけ、つけないなら全てにつけない。一部だけにつけることは禁止。
+  - OK: `xxx。yyy。zzz。`
+  - OK: `xxx yyy zzz`
+  - NG: `xxx。yyy。zzz`
+
 ## 協働ルール
 
 ### 必須事項（YOU MUST）
