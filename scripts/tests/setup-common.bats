@@ -48,6 +48,13 @@ teardown() {
   [ "$(readlink "$HOME/.config/git/ignore")" = "$REPO_DIR/home/dot_config/git/ignore" ]
 }
 
+@test "setup-common.sh symlinks .markdownlint.jsonc into HOME" {
+  run "$SETUP_COMMON_SH"
+  [ "$status" -eq 0 ]
+  [ -L "$HOME/.markdownlint.jsonc" ]
+  [ "$(readlink "$HOME/.markdownlint.jsonc")" = "$REPO_DIR/home/.markdownlint.jsonc" ]
+}
+
 @test "setup-common.sh backs up a pre-existing real .bashrc before symlinking over it" {
   printf 'local content' > "$HOME/.bashrc"
 

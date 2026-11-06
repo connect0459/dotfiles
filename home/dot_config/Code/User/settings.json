@@ -170,11 +170,7 @@
   "markdown-pdf.styles": [],
   "markdown-pdf.mermaidServer": "https://unpkg.com/mermaid@10.4.0/dist/mermaid.min.js",
   // Markdownlint設定
-  "markdownlint.config": {
-    "MD033": false, // Inline HTMLを許可
-    "MD034": false, // Bare URLを許可
-    "MD046": false // コードブロックのスタイルを無視
-  },
+  "markdownlint.configFile": "${userHome}/.markdownlint.jsonc",
   // ==========================================
   // その他の設定
   // ==========================================
