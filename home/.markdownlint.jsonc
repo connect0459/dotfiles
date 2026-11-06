@@ -1,0 +1,10 @@
+{
+  // Japanese characters differ widely between character count and display width, so line length is not enforced
+  "MD013": false,
+  // Allow inline HTML
+  "MD033": false,
+  // Allow bare URLs
+  "MD034": false,
+  // Do not enforce a code block style
+  "MD046": false
+}

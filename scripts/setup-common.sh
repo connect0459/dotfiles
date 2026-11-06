@@ -14,6 +14,7 @@ DOTFILES="
 .bashrc:.bashrc
 .bash_profile:.bash_profile
 .bash_aliases:.bash_aliases
+.markdownlint.jsonc:.markdownlint.jsonc
 dot_config/git/ignore:.config/git/ignore
 "
 
