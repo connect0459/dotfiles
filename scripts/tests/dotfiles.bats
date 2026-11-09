@@ -69,3 +69,28 @@ setup() {
   [ "$status" -eq 0 ]
   [[ "$output" != *"No such file or directory"* ]]
 }
+
+@test "home/.bash_aliases loads aliases defined in ~/.bash_aliases.local" {
+  TMP="$(mktemp -d)"
+  echo "alias local_only_alias='echo local'" > "$TMP/.bash_aliases.local"
+
+  run env -i HOME="$TMP" PATH="/usr/bin:/bin" \
+    bash -c "source '$REPO_DIR/home/.bash_aliases' && alias local_only_alias"
+
+  rm -rf "$TMP"
+
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"local_only_alias"* ]]
+}
+
+@test "home/.bash_aliases does not error when ~/.bash_aliases.local does not exist" {
+  TMP="$(mktemp -d)"
+
+  run env -i HOME="$TMP" PATH="/usr/bin:/bin" \
+    bash -c "source '$REPO_DIR/home/.bash_aliases'"
+
+  rm -rf "$TMP"
+
+  [ "$status" -eq 0 ]
+  [ -z "$output" ]
+}
