@@ -106,3 +106,7 @@ git_rebase_default() {
 alias alias_gc='git_cleanup'
 alias alias_gca='git_cleanup_all'
 alias alias_grd='git_rebase_default'
+
+if [ -f "$HOME/.bash_aliases.local" ]; then
+    . "$HOME/.bash_aliases.local"
+fi
