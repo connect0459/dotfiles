@@ -94,6 +94,8 @@
     "editor.tabSize": 4
   },
   "swift.disableSwiftPackageManagerIntegration": true,
+  // Haskell
+  "haskell.manageHLS": "GHCup",
   // JSON
   "[json]": {
     "editor.tabSize": 2,
