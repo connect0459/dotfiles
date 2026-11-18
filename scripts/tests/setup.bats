@@ -10,6 +10,7 @@ setup() {
   # symlinking without SETUP_DRY_RUN also suppressing it.
   export SETUP_SKIP_NETWORK_INSTALLS=1
   mkdir -p "$HOME"
+  export DOTFILES_PROFILE=work
 }
 
 teardown() {
@@ -20,28 +21,28 @@ teardown() {
   run "$SETUP_SH"
   [ "$status" -eq 0 ]
   [ -L "$HOME/.bashrc" ]
-  [ "$(readlink "$HOME/.bashrc")" = "$REPO_DIR/home/.bashrc" ]
+  [ "$(readlink "$HOME/.bashrc")" = "$REPO_DIR/home/common/.bashrc" ]
 }
 
 @test "setup.sh symlinks .bash_profile into HOME" {
   run "$SETUP_SH"
   [ "$status" -eq 0 ]
   [ -L "$HOME/.bash_profile" ]
-  [ "$(readlink "$HOME/.bash_profile")" = "$REPO_DIR/home/.bash_profile" ]
+  [ "$(readlink "$HOME/.bash_profile")" = "$REPO_DIR/home/common/.bash_profile" ]
 }
 
 @test "setup.sh symlinks .bash_aliases into HOME" {
   run "$SETUP_SH"
   [ "$status" -eq 0 ]
   [ -L "$HOME/.bash_aliases" ]
-  [ "$(readlink "$HOME/.bash_aliases")" = "$REPO_DIR/home/.bash_aliases" ]
+  [ "$(readlink "$HOME/.bash_aliases")" = "$REPO_DIR/home/common/.bash_aliases" ]
 }
 
 @test "setup.sh symlinks .config/git/ignore into HOME, creating parent dirs" {
   run "$SETUP_SH"
   [ "$status" -eq 0 ]
   [ -L "$HOME/.config/git/ignore" ]
-  [ "$(readlink "$HOME/.config/git/ignore")" = "$REPO_DIR/home/dot_config/git/ignore" ]
+  [ "$(readlink "$HOME/.config/git/ignore")" = "$REPO_DIR/home/common/dot_config/git/ignore" ]
 }
 
 @test "setup.sh backs up a pre-existing real .bashrc before symlinking over it" {
@@ -102,7 +103,61 @@ teardown() {
   run "$SETUP_SH"
   [ "$status" -eq 0 ]
   [ -L "$HOME/Library/Application Support/Code/User/settings.json" ]
-  [ "$(readlink "$HOME/Library/Application Support/Code/User/settings.json")" = "$REPO_DIR/home/dot_config/Code/User/settings.json" ]
+  [ "$(readlink "$HOME/Library/Application Support/Code/User/settings.json")" = "$REPO_DIR/home/common/dot_config/Code/User/settings.json" ]
+}
+
+@test "setup.sh --profile records the selected profile so a later run needs no flag" {
+  unset DOTFILES_PROFILE
+
+  run "$SETUP_SH" --profile personal
+  [ "$status" -eq 0 ]
+  [ "$(cat "$HOME/.config/dotfiles/profile")" = "personal" ]
+
+  run "$SETUP_SH"
+  [ "$status" -eq 0 ]
+  [ "$(cat "$HOME/.config/dotfiles/profile")" = "personal" ]
+}
+
+@test "setup.sh --profile switches a previously recorded profile" {
+  unset DOTFILES_PROFILE
+  "$SETUP_SH" --profile work > /dev/null
+
+  run "$SETUP_SH" --profile personal
+
+  [ "$status" -eq 0 ]
+  [ "$(cat "$HOME/.config/dotfiles/profile")" = "personal" ]
+  [ ! -e "$HOME/.config/dotfiles/profile.sh" ]
+}
+
+@test "setup.sh fails before touching HOME when no profile is selected" {
+  unset DOTFILES_PROFILE
+
+  run "$SETUP_SH"
+
+  [ "$status" -ne 0 ]
+  [[ "$output" == *"No profile selected"* ]]
+  [ ! -e "$HOME/.bashrc" ]
+}
+
+@test "setup.sh rejects an unknown profile before touching HOME" {
+  unset DOTFILES_PROFILE
+
+  run "$SETUP_SH" --profile bogus
+
+  [ "$status" -ne 0 ]
+  [[ "$output" == *"Unknown profile: bogus"* ]]
+  [ ! -e "$HOME/.bashrc" ]
+  [ ! -e "$HOME/.config/dotfiles/profile" ]
+}
+
+@test "setup.sh does not record the profile when SETUP_DRY_RUN is set" {
+  unset DOTFILES_PROFILE
+  export SETUP_DRY_RUN=1
+
+  run "$SETUP_SH" --profile work
+
+  [ "$status" -eq 0 ]
+  [ ! -e "$HOME/.config/dotfiles/profile" ]
 }
 
 @test "setup.sh prints a reminder to reload the shell config after completing" {

@@ -85,13 +85,6 @@ ssh_agent_setup
 # cargo
 . "$HOME/.cargo/env"
 
-# for Android SDK
-export PATH="${PATH}:${HOME}/Library/Android/sdk/emulator"
-export PATH="${PATH}:${HOME}/Library/Android/sdk/platform-tools"
-
-# Haskell
-[ -f "$HOME/.ghcup/env" ] && . "$HOME/.ghcup/env" # ghcup-env
-
 # mise
 export PATH="$HOME/.local/bin:$PATH"
 command -v mise &> /dev/null && eval "$(mise activate bash)"
@@ -104,9 +97,11 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-# rancher desktop
-[ -d "$HOME/.rd/bin" ] && export PATH="$HOME/.rd/bin:$PATH"
-
 # rbenv
 export PATH="$HOME/.rbenv/bin:$PATH"
 eval "$(rbenv init - bash)"
+
+# profile-specific shell config
+if [ -f "$HOME/.config/dotfiles/profile.sh" ]; then
+    . "$HOME/.config/dotfiles/profile.sh"
+fi

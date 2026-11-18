@@ -1,29 +1,30 @@
 #!/usr/bin/env bash
-# macOS-specific setup: installs dependencies from Brewfile, installs Ruby via
+# macOS-specific setup: installs dependencies from the selected profile's Brewfile, installs Ruby via
 # rbenv, symlinks VS Code user settings, and configures bash. Safe to re-run.
 
 # shellcheck disable=SC1091
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 source "$SCRIPT_DIR/libs/dry_run.sh"
+source "$SCRIPT_DIR/libs/profile.sh"
 source "$SCRIPT_DIR/libs/symlink.sh"
 source "$SCRIPT_DIR/libs/term.sh"
 
-if [ -f "$REPO_DIR/home/Brewfile" ]; then
-  pln "$(term_bold 'Installing macOS dependencies from Brewfile')"
+PROFILE="$(profile_resolve "$REPO_DIR/home" "$HOME/.config/dotfiles/profile" "${DOTFILES_PROFILE:-}")" || exit 1
+BREWFILE="$REPO_DIR/home/$PROFILE/Brewfile"
 
-  if skip_network_install; then
-    pln "$(term_cyan '[DRY RUN] Would install from' "$REPO_DIR/home/Brewfile")"
-  else
-    if ! command -v brew &> /dev/null; then
-      pln "$(term_red 'brew not found. Please install Homebrew from https://brew.sh')" >&2
-      exit 1
-    fi
-    brew bundle install --file="$REPO_DIR/home/Brewfile"
-  fi
+pln "$(term_bold 'Installing macOS dependencies from Brewfile')"
+
+if [ ! -f "$BREWFILE" ]; then
+  pln "$(term_cyan "No Brewfile for profile $PROFILE, skipping")"
+elif skip_network_install; then
+  pln "$(term_cyan '[DRY RUN] Would install from' "$BREWFILE")"
 else
-  pln "$(term_red 'Brewfile not found at' "$REPO_DIR/home/Brewfile")" >&2
-  exit 1
+  if ! command -v brew &> /dev/null; then
+    pln "$(term_red 'brew not found. Please install Homebrew from https://brew.sh')" >&2
+    exit 1
+  fi
+  brew bundle install --file="$BREWFILE"
 fi
 
 RUBY_VERSION="3.4.5"
@@ -43,7 +44,7 @@ echo
 pln "$(term_bold 'Symlinking VS Code user settings')"
 
 VSCODE_SETTINGS_LINK="$HOME/Library/Application Support/Code/User/settings.json"
-if ! symlink_setup_reporting "$REPO_DIR/home/dot_config/Code/User/settings.json" "$VSCODE_SETTINGS_LINK"; then
+if ! symlink_setup_reporting "$REPO_DIR/home/common/dot_config/Code/User/settings.json" "$VSCODE_SETTINGS_LINK"; then
   exit 1
 fi
 

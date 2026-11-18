@@ -1,12 +1,12 @@
 # sync-agents
 
-A shell tool that distributes the agent-config content in `../../home/dot_agents/` and `../../home/dot_claude/` into the real `$HOME`, with no runtime dependency beyond what macOS ships plus `jq`.
+A shell tool that distributes the agent-config content in `../../home/common/dot_agents/` and `../../home/common/dot_claude/` into the real `$HOME`, with no runtime dependency beyond what macOS ships plus `jq`.
 
 ## Scope
 
 `libs/*.sh` implements the individual filesystem primitives this needs — content checksums, directory sync, and a JSON permissions merge — each covered by `tests/*.bats`. `sync-agents.sh` additionally depends on the shared `symlink.sh` / `term.sh` in `../libs/`, which aren't private to this subsystem — see `../libs/README.md`.
 
-`sync-agents.sh` is the orchestration entry point. It reads from `../../home/` (this repo's canonical copy of `dot_agents/AGENTS.md`, `dot_agents/agent-docs/**`, and `dot_claude/settings.json` — see `../../home/dot_agents/AGENTS.md`) and writes to the real `$HOME`:
+`sync-agents.sh` is the orchestration entry point. It reads from `../../home/common/` (this repo's canonical copy of `dot_agents/AGENTS.md`, `dot_agents/agent-docs/**`, and `dot_claude/settings.json` — see `../../home/common/dot_agents/AGENTS.md`) and writes to the real `$HOME`:
 
 - Copies `AGENTS.md` into `~/.agents/AGENTS.md` and syncs `agent-docs/` into `~/.agents/agent-docs/`
 - Merges `dot_claude/settings.json`'s top-level keys into `~/.claude/settings.json` (skipped if the source file doesn't exist)

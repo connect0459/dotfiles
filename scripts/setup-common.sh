@@ -1,31 +1,51 @@
 #!/usr/bin/env bash
-# Cross-platform setup: symlinks shell rc files from home/ into $HOME, then
+# Cross-platform setup: symlinks shell rc files from home/common/ and the selected profile's home/<profile>/ into $HOME, then
 # installs rustup and nvm. Safe to re-run.
 
 # shellcheck disable=SC1091
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 source "$SCRIPT_DIR/libs/dry_run.sh"
+source "$SCRIPT_DIR/libs/profile.sh"
 source "$SCRIPT_DIR/libs/symlink.sh"
 source "$SCRIPT_DIR/libs/term.sh"
 
-# Format: "<home/-relative source path>:<$HOME-relative link path>"
+# Format: "<layer>:<layer-relative source path>:<$HOME-relative link path>"
+# <layer> is "common" (always applied) or "profile" (the selected profile's
+# directory under home/; a missing source removes the link instead).
 DOTFILES="
-.bashrc:.bashrc
-.bash_profile:.bash_profile
-.bash_aliases:.bash_aliases
-.markdownlint.jsonc:.markdownlint.jsonc
-dot_config/git/ignore:.config/git/ignore
-dot_config/cabal/config:.config/cabal/config
+common:.bashrc:.bashrc
+common:.bash_profile:.bash_profile
+common:.bash_aliases:.bash_aliases
+common:.markdownlint.jsonc:.markdownlint.jsonc
+common:dot_config/git/ignore:.config/git/ignore
+common:dot_config/cabal/config:.config/cabal/config
+profile:bashrc.sh:.config/dotfiles/profile.sh
 "
 
-pln "$(term_bold 'Bootstrapping shell dotfiles')"
+PROFILE_STATE_FILE="$HOME/.config/dotfiles/profile"
 
-for pair in $DOTFILES; do
-  src="${pair%%:*}"
-  rel="${pair#*:}"
-  target="$REPO_DIR/home/$src"
+PROFILE="$(profile_resolve "$REPO_DIR/home" "$PROFILE_STATE_FILE" "${DOTFILES_PROFILE:-}")" || exit 1
+
+pln "$(term_bold 'Bootstrapping shell dotfiles') (profile: $PROFILE)"
+
+for entry in $DOTFILES; do
+  layer="${entry%%:*}"
+  rest="${entry#*:}"
+  src="${rest%%:*}"
+  rel="${rest#*:}"
+  case "$layer" in
+    common) layer_dir="common" ;;
+    profile) layer_dir="$PROFILE" ;;
+  esac
+  target="$REPO_DIR/home/$layer_dir/$src"
   link="$HOME/$rel"
+  if [ "$layer" = "profile" ] && [ ! -f "$target" ]; then
+    if [ -z "$SETUP_DRY_RUN" ] && [ -L "$link" ]; then
+      rm -f "$link"
+    fi
+    continue
+  fi
   if ! symlink_setup_reporting "$target" "$link"; then
     exit 1
   fi

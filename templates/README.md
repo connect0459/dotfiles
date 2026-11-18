@@ -4,7 +4,7 @@ Reference material that isn't safe to manage as a symlinked dotfile — values t
 
 ## colima
 
-Reference material for this machine's Colima setup. Colima and Docker themselves are installed via `home/Brewfile` (see `scripts/setup-macos.sh`).
+Reference material for this machine's Colima setup. Colima and Docker themselves are installed via `home/work/Brewfile` (see `scripts/setup-macos.sh`).
 
 ### Why `colima.yaml` isn't a symlinked dotfile
 
@@ -29,7 +29,7 @@ periodically (see `scripts/colima/colima-cleanup.sh --help`) to reclaim it via `
 
 ## docker
 
-Reference material for this machine's Docker CLI configuration. `docker` and `docker-compose` themselves are installed via `home/Brewfile`.
+Reference material for this machine's Docker CLI configuration. `docker` and `docker-compose` themselves are installed via `home/work/Brewfile`.
 
 ### Why `config.json` isn't a symlinked dotfile
 
