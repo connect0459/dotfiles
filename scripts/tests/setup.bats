@@ -68,6 +68,8 @@ teardown() {
     skip "Linux only — setup.sh delegates to setup-macos.sh on this platform"
   fi
 
+  export DOTFILES_PROFILE=personal
+
   run "$SETUP_SH"
   [ "$status" -eq 0 ]
 
