@@ -40,18 +40,23 @@ If this changes an existing symlink target, or moves/removes a tracked dotfile, 
 - Items intentionally deferred and the reasons why.
 
 ```txt
-If you deferred something due to time constraints, document it here. Reviewers cannot tell whether something was intentionally skipped or overlooked without this information.
+If you deferred something due to time constraints, document it here.
+Reviewers cannot tell whether something was intentionally skipped or overlooked
+without this information.
 ```
 
 ## Test Items
 
-- Describe any test considerations beyond the automated bats suite.
+- Describe the bats tests added, following Red/Green TDD (which test was written first, and what it confirmed failed before the implementation existed).
+- Confirm `just verify` (shellcheck and bats) passes locally, and note any test that is skipped on your OS.
+- If the change touches the bootstrap scripts, note which OS and profile it was exercised on, and whether `setup.sh` was run against a real `$HOME`.
 
 ## [Required] Quality Checklist
 
 **Please check all items before merging.**
 
-- [ ] **Verify**: `just verify` (lint + test) passes
-- [ ] **Docs in sync**: `README.md` / `AGENTS.md` reflect the actual current scope
+- [ ] **CI Workflow Execution**: All checks passed on the [CI workflow](../actions/workflows/ci.yml) for this PR.
+- [ ] **Code Comments**: None added without the maintainer's explicit permission, per this project's comment policy (see `AGENTS.md`).
+- [ ] **Reference Docs**: `README.md` / `AGENTS.md` reflect the actual current scope
 
 > **Important**: This checklist ensures quality. Please verify all items before requesting review.

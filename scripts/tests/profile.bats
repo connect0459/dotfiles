@@ -67,6 +67,18 @@ teardown() {
   [ "$output" = "personal" ]
 }
 
+@test "profile_resolve prints only the profile name when SIGPIPE is ignored and many profiles follow the match" {
+  trap '' PIPE
+  for i in $(seq 1 20); do
+    mkdir "$PROFILES_DIR/zz-$i"
+  done
+
+  run profile_resolve "$PROFILES_DIR" "$STATE_FILE" personal
+
+  [ "$status" -eq 0 ]
+  [ "$output" = "personal" ]
+}
+
 @test "profile_resolve lets an explicit request override the recorded profile" {
   mkdir -p "$(dirname "$STATE_FILE")"
   echo personal > "$STATE_FILE"

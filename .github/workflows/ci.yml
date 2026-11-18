@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+run-name: CI on ${{ github.head_ref || github.ref_name }}
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: verify (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install tools (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y bats
+
+      - name: Install tools (macOS)
+        if: runner.os == 'macOS'
+        run: brew install bats-core shellcheck
+
+      - name: Lint shell scripts
+        run: shellcheck $(find scripts -name "*.sh" -type f)
+
+      - name: Run bats tests
+        run: bats --print-output-on-failure $(find scripts -name "*.bats" -type f)
+
+  gate:
+    runs-on: ubuntu-latest
+    needs:
+      - verify
+    if: always()
+    steps:
+      - name: Verify all required jobs succeeded
+        if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
+        run: |
+          echo "One or more required jobs did not succeed."
+          exit 1

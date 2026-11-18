@@ -22,7 +22,7 @@ profile_resolve() {
     return 1
   fi
 
-  if ! profile_list "$profiles_dir" | grep -qxF -- "$name"; then
+  if ! profile_list "$profiles_dir" | grep -xF -- "$name" > /dev/null; then
     echo "Unknown profile: $name. Available profiles: $(profile_list "$profiles_dir" | tr '\n' ' ')" >&2
     return 1
   fi
