@@ -16,6 +16,7 @@ DOTFILES="
 .bash_aliases:.bash_aliases
 .markdownlint.jsonc:.markdownlint.jsonc
 dot_config/git/ignore:.config/git/ignore
+dot_config/cabal/config:.config/cabal/config
 "
 
 pln "$(term_bold 'Bootstrapping shell dotfiles')"

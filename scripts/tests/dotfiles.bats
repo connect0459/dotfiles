@@ -94,3 +94,9 @@ setup() {
   [ "$status" -eq 0 ]
   [ -z "$output" ]
 }
+
+@test "home/dot_config/cabal/config points hackage.haskell.org at an https URL without TUF verification" {
+  run grep -E '^[[:space:]]+(url: https://hackage\.haskell\.org/|secure: False)$' "$REPO_DIR/home/dot_config/cabal/config"
+  [ "$status" -eq 0 ]
+  [ "${#lines[@]}" -eq 2 ]
+}

@@ -48,6 +48,13 @@ teardown() {
   [ "$(readlink "$HOME/.config/git/ignore")" = "$REPO_DIR/home/dot_config/git/ignore" ]
 }
 
+@test "setup-common.sh symlinks .config/cabal/config into HOME, creating parent dirs" {
+  run "$SETUP_COMMON_SH"
+  [ "$status" -eq 0 ]
+  [ -L "$HOME/.config/cabal/config" ]
+  [ "$(readlink "$HOME/.config/cabal/config")" = "$REPO_DIR/home/dot_config/cabal/config" ]
+}
+
 @test "setup-common.sh symlinks .markdownlint.jsonc into HOME" {
   run "$SETUP_COMMON_SH"
   [ "$status" -eq 0 ]
