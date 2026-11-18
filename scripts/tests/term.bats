@@ -68,6 +68,13 @@ setup() {
     run script -qc "bash -c \"source '$LIB_DIR/term.sh'; printf '%s' \\\"\\\$(term_bold hello)\\\"\"" /dev/null
   fi
 
-  [ "$status" -eq 0 ]
-  [[ "$output" == *$'\033[1mhello\033[0m'* ]]
+  if [ "$status" -ne 0 ] || [[ "$output" != *$'\033[1mhello\033[0m'* ]]; then
+    {
+      printf 'script(1) exit status: %s\n' "$status"
+      printf 'script(1) output (escaped): %q\n' "$output"
+      printf 'stdin is a tty: %s\n' "$([ -t 0 ] && echo yes || echo no)"
+      printf 'load average: %s\n' "$(uptime)"
+    } >&3
+    return 1
+  fi
 }
