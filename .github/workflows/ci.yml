@@ -46,7 +46,7 @@ jobs:
         run: shellcheck $(find scripts -name "*.sh" -type f)
 
       - name: Run bats tests
-        run: bats $(find scripts -name "*.bats" -type f)
+        run: bats --print-output-on-failure $(find scripts -name "*.bats" -type f)
 
   gate:
     runs-on: ubuntu-latest
