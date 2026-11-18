@@ -60,9 +60,14 @@ teardown() {
 }
 
 @test "setup-macos.sh displays instructions for setting login shell when bash is installed" {
-  if ! command -v brew &> /dev/null; then
-    skip "brew not installed"
-  fi
+  FAKE_PREFIX="$TMP/homebrew"
+  mkdir -p "$FAKE_PREFIX/bin"
+  printf '#!/bin/sh\n' > "$FAKE_PREFIX/bin/bash"
+  chmod +x "$FAKE_PREFIX/bin/bash"
+  mkdir -p "$TMP/fakebin"
+  printf '#!/bin/sh\necho "%s"\n' "$FAKE_PREFIX" > "$TMP/fakebin/brew"
+  chmod +x "$TMP/fakebin/brew"
+  export PATH="$TMP/fakebin:$PATH"
 
   export SHELL="/bin/bash"
   run "$SETUP_MACOS_SH"
