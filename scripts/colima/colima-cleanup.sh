@@ -49,7 +49,7 @@ while [ $# -gt 0 ]; do
 done
 
 if ! command -v colima &> /dev/null; then
-  pln "$(term_red 'colima not found. Install it first (see home/Brewfile).')" >&2
+  pln "$(term_red 'colima not found. Install it first (see home/work/Brewfile).')" >&2
   exit 1
 fi
 

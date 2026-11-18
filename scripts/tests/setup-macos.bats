@@ -11,6 +11,7 @@ setup() {
   # without SETUP_DRY_RUN also suppressing it.
   export SETUP_SKIP_NETWORK_INSTALLS=1
   mkdir -p "$HOME"
+  export DOTFILES_PROFILE=work
 }
 
 teardown() {
@@ -34,7 +35,21 @@ teardown() {
   export SETUP_DRY_RUN=1
   run "$SETUP_MACOS_SH"
   [ "$status" -eq 0 ]
-  [[ "$output" == *"Would install from $REPO_DIR/home/Brewfile"* ]]
+  [[ "$output" == *"Would install from $REPO_DIR/home/work/Brewfile"* ]]
+}
+
+@test "setup-macos.sh skips package installation without failing when the profile has no Brewfile" {
+  export DOTFILES_PROFILE=personal
+  run "$SETUP_MACOS_SH"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"No Brewfile for profile personal, skipping"* ]]
+}
+
+@test "setup-macos.sh fails when no profile is selected" {
+  unset DOTFILES_PROFILE
+  run "$SETUP_MACOS_SH"
+  [ "$status" -ne 0 ]
+  [[ "$output" == *"No profile selected"* ]]
 }
 
 @test "setup-macos.sh reports dry-run for Ruby install via rbenv when SETUP_DRY_RUN is set" {
@@ -59,7 +74,7 @@ teardown() {
   run "$SETUP_MACOS_SH"
   [ "$status" -eq 0 ]
   [ -L "$HOME/Library/Application Support/Code/User/settings.json" ]
-  [ "$(readlink "$HOME/Library/Application Support/Code/User/settings.json")" = "$REPO_DIR/home/dot_config/Code/User/settings.json" ]
+  [ "$(readlink "$HOME/Library/Application Support/Code/User/settings.json")" = "$REPO_DIR/home/common/dot_config/Code/User/settings.json" ]
 }
 
 @test "setup-macos.sh prints a dry-run message for VS Code settings.json and does not create it when SETUP_DRY_RUN is set" {
@@ -67,5 +82,5 @@ teardown() {
   run "$SETUP_MACOS_SH"
   [ "$status" -eq 0 ]
   [ ! -e "$HOME/Library/Application Support/Code/User/settings.json" ]
-  [[ "$output" == *"[DRY RUN] Would symlink $HOME/Library/Application Support/Code/User/settings.json -> $REPO_DIR/home/dot_config/Code/User/settings.json"* ]]
+  [[ "$output" == *"[DRY RUN] Would symlink $HOME/Library/Application Support/Code/User/settings.json -> $REPO_DIR/home/common/dot_config/Code/User/settings.json"* ]]
 }

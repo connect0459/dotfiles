@@ -33,7 +33,7 @@ _pad_right() {
   printf '%s%s' "$s" "$(_repeat ' ' "$pad")"
 }
 
-SOURCE_DIR="${SYNC_SOURCE_DIR:-$(cd "$SCRIPT_DIR/../.." && pwd)/home}"
+SOURCE_DIR="${SYNC_SOURCE_DIR:-$(cd "$SCRIPT_DIR/../.." && pwd)/home/common}"
 CENTRAL_DIR="$HOME/.agents"
 CLAUDE_DIR="$HOME/.claude"
 GITHUB_DIR="$HOME/.github"

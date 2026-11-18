@@ -11,13 +11,13 @@ This project is intended for public release. All of the following must be writte
 - Commit messages
 - Documentation (including `AGENTS.md`, `README.md`, and any `scripts/sync-agents/README.md`-style subdirectory docs)
 
-Exception: `home/dot_agents/AGENTS.md` and `home/dot_agents/agent-docs/**` are not project documentation — they are the user's personal instruction content for coding agents, distributed as-is by `scripts/sync-agents/sync-agents.sh`, and are kept in Japanese intentionally.
+Exception: `home/common/dot_agents/AGENTS.md` and `home/common/dot_agents/agent-docs/**` are not project documentation — they are the user's personal instruction content for coding agents, distributed as-is by `scripts/sync-agents/sync-agents.sh`, and are kept in Japanese intentionally.
 
 ## Project Overview
 
-This is a personal dotfiles repository. `home/` is the canonical source of everything that ends up under `$HOME`, mixing shell rc files under their real dotted names with `dot_`-prefixed directories for content that lands one level deeper. No GNU Stow or chezmoi. See the root `README.md` for the actual file inventory and the Directory naming convention below for the naming rule.
+This is a personal dotfiles repository. `home/` is the canonical source of everything that ends up under `$HOME`, split into layers: `home/common/` applies to every machine, and `home/<profile>/` (e.g. `home/work/`, `home/personal/`) applies only when that profile is selected. Inside a layer, shell rc files keep their real dotted names and `dot_`-prefixed directories hold content that lands one level deeper. No GNU Stow or chezmoi. See the root `README.md` for the actual file inventory and the Directory naming convention below for the naming rule.
 
-`scripts/` holds every automation script this repo ships, each paired with its own tests. `scripts/setup.sh` is the entry point — it symlinks the plain dotfiles from `home/` into `$HOME`, then delegates to `scripts/sync-agents/sync-agents.sh` for the coding-agent config distribution. See `scripts/sync-agents/README.md` for what that covers.
+`scripts/` holds every automation script this repo ships, each paired with its own tests. `scripts/setup.sh` is the entry point — it symlinks the plain dotfiles from `home/common/` and the selected profile layer into `$HOME`, then delegates to `scripts/sync-agents/sync-agents.sh` for the coding-agent config distribution. See `scripts/sync-agents/README.md` for what that covers.
 
 ## Development Philosophy
 
@@ -44,8 +44,8 @@ This is a personal dotfiles repository. `home/` is the canonical source of every
 
 ### Directory naming
 
-- A directory gets the `dot_foo` prefix (underscore, not a literal leading dot) when its contents are symlinked, physically copied, or merged onto a real path one level under `$HOME` — e.g. `home/dot_config/` → `~/.config/`.
-- A file that is itself the direct symlink target keeps its real dotted name instead (e.g. `home/.bashrc`, not `home/dot_bashrc`).
+- A directory gets the `dot_foo` prefix (underscore, not a literal leading dot) when its contents are symlinked, physically copied, or merged onto a real path one level under `$HOME` — e.g. `home/common/dot_config/` → `~/.config/`.
+- A file that is itself the direct symlink target keeps its real dotted name instead (e.g. `home/common/.bashrc`, not `home/common/dot_bashrc`).
 - Content that is not itself a hidden-path target (tooling, documentation, source scripts) uses a plain name — do not prefix it with `dot_`.
 
 ### Shell scripts

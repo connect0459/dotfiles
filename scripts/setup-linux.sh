@@ -8,33 +8,38 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 source "$SCRIPT_DIR/libs/apt.sh"
 source "$SCRIPT_DIR/libs/dry_run.sh"
+source "$SCRIPT_DIR/libs/profile.sh"
 source "$SCRIPT_DIR/libs/symlink.sh"
 source "$SCRIPT_DIR/libs/term.sh"
 
+PROFILE="$(profile_resolve "$REPO_DIR/home" "$HOME/.config/dotfiles/profile" "${DOTFILES_PROFILE:-}")" || exit 1
+
 RBENV_ROOT="$HOME/.rbenv"
 RUBY_VERSION="3.4.5"
-# Overridable so tests can point at a scratch file instead of the real
-# home/Aptfile.txt
-APTFILE="${APTFILE:-$REPO_DIR/home/Aptfile.txt}"
-
-if ! APT_PACKAGES_OUTPUT="$(apt_packages_from_file "$APTFILE")"; then
-  pln "$(term_red "Failed to read apt package list from $APTFILE")" >&2
-  exit 1
-fi
-
 APT_DEPS=()
-while IFS= read -r pkg; do
-  [ -n "$pkg" ] && APT_DEPS+=("$pkg")
-done <<< "$APT_PACKAGES_OUTPUT"
+if [ -n "${APTFILE:-}" ] || [ -f "$REPO_DIR/home/$PROFILE/Aptfile.txt" ]; then
+  APTFILE="${APTFILE:-$REPO_DIR/home/$PROFILE/Aptfile.txt}"
 
-if [ "${#APT_DEPS[@]}" -eq 0 ]; then
-  pln "$(term_red "No apt packages found in $APTFILE")" >&2
-  exit 1
+  if ! APT_PACKAGES_OUTPUT="$(apt_packages_from_file "$APTFILE")"; then
+    pln "$(term_red "Failed to read apt package list from $APTFILE")" >&2
+    exit 1
+  fi
+
+  while IFS= read -r pkg; do
+    [ -n "$pkg" ] && APT_DEPS+=("$pkg")
+  done <<< "$APT_PACKAGES_OUTPUT"
+
+  if [ "${#APT_DEPS[@]}" -eq 0 ]; then
+    pln "$(term_red "No apt packages found in $APTFILE")" >&2
+    exit 1
+  fi
 fi
 
 pln "$(term_bold 'Installing apt dependencies')"
 
-if skip_network_install; then
+if [ "${#APT_DEPS[@]}" -eq 0 ]; then
+  pln "$(term_cyan "No Aptfile.txt for profile $PROFILE, skipping")"
+elif skip_network_install; then
   pln "$(term_cyan '[DRY RUN] Would apt-get install:' "${APT_DEPS[*]}")"
 else
   sudo apt-get update
@@ -71,6 +76,6 @@ echo
 pln "$(term_bold 'Symlinking VS Code user settings')"
 
 VSCODE_SETTINGS_LINK="$HOME/.config/Code/User/settings.json"
-if ! symlink_setup_reporting "$REPO_DIR/home/dot_config/Code/User/settings.json" "$VSCODE_SETTINGS_LINK"; then
+if ! symlink_setup_reporting "$REPO_DIR/home/common/dot_config/Code/User/settings.json" "$VSCODE_SETTINGS_LINK"; then
   exit 1
 fi

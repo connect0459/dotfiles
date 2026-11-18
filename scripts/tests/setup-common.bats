@@ -10,6 +10,7 @@ setup() {
   # exercise real symlinking without SETUP_DRY_RUN also suppressing it.
   export SETUP_SKIP_NETWORK_INSTALLS=1
   mkdir -p "$HOME"
+  export DOTFILES_PROFILE=work
   # Strip user-level toolchain dirs (~/.cargo/bin, ~/.local/bin, rbenv
   # shims, ...) so the new "already installed" existence checks see a clean
   # machine, not whatever happens to be on the developer's real PATH.
@@ -24,42 +25,91 @@ teardown() {
   run "$SETUP_COMMON_SH"
   [ "$status" -eq 0 ]
   [ -L "$HOME/.bashrc" ]
-  [ "$(readlink "$HOME/.bashrc")" = "$REPO_DIR/home/.bashrc" ]
+  [ "$(readlink "$HOME/.bashrc")" = "$REPO_DIR/home/common/.bashrc" ]
 }
 
 @test "setup-common.sh symlinks .bash_profile into HOME" {
   run "$SETUP_COMMON_SH"
   [ "$status" -eq 0 ]
   [ -L "$HOME/.bash_profile" ]
-  [ "$(readlink "$HOME/.bash_profile")" = "$REPO_DIR/home/.bash_profile" ]
+  [ "$(readlink "$HOME/.bash_profile")" = "$REPO_DIR/home/common/.bash_profile" ]
 }
 
 @test "setup-common.sh symlinks .bash_aliases into HOME" {
   run "$SETUP_COMMON_SH"
   [ "$status" -eq 0 ]
   [ -L "$HOME/.bash_aliases" ]
-  [ "$(readlink "$HOME/.bash_aliases")" = "$REPO_DIR/home/.bash_aliases" ]
+  [ "$(readlink "$HOME/.bash_aliases")" = "$REPO_DIR/home/common/.bash_aliases" ]
 }
 
 @test "setup-common.sh symlinks .config/git/ignore into HOME, creating parent dirs" {
   run "$SETUP_COMMON_SH"
   [ "$status" -eq 0 ]
   [ -L "$HOME/.config/git/ignore" ]
-  [ "$(readlink "$HOME/.config/git/ignore")" = "$REPO_DIR/home/dot_config/git/ignore" ]
+  [ "$(readlink "$HOME/.config/git/ignore")" = "$REPO_DIR/home/common/dot_config/git/ignore" ]
 }
 
 @test "setup-common.sh symlinks .config/cabal/config into HOME, creating parent dirs" {
   run "$SETUP_COMMON_SH"
   [ "$status" -eq 0 ]
   [ -L "$HOME/.config/cabal/config" ]
-  [ "$(readlink "$HOME/.config/cabal/config")" = "$REPO_DIR/home/dot_config/cabal/config" ]
+  [ "$(readlink "$HOME/.config/cabal/config")" = "$REPO_DIR/home/common/dot_config/cabal/config" ]
 }
 
 @test "setup-common.sh symlinks .markdownlint.jsonc into HOME" {
   run "$SETUP_COMMON_SH"
   [ "$status" -eq 0 ]
   [ -L "$HOME/.markdownlint.jsonc" ]
-  [ "$(readlink "$HOME/.markdownlint.jsonc")" = "$REPO_DIR/home/.markdownlint.jsonc" ]
+  [ "$(readlink "$HOME/.markdownlint.jsonc")" = "$REPO_DIR/home/common/.markdownlint.jsonc" ]
+}
+
+@test "setup-common.sh symlinks the profile's bashrc.sh into ~/.config/dotfiles/profile.sh" {
+  run "$SETUP_COMMON_SH"
+  [ "$status" -eq 0 ]
+  [ -L "$HOME/.config/dotfiles/profile.sh" ]
+  [ "$(readlink "$HOME/.config/dotfiles/profile.sh")" = "$REPO_DIR/home/work/bashrc.sh" ]
+}
+
+@test "setup-common.sh removes a stale profile.sh link when the selected profile has no bashrc.sh" {
+  "$SETUP_COMMON_SH" > /dev/null
+  export DOTFILES_PROFILE=personal
+
+  run "$SETUP_COMMON_SH"
+
+  [ "$status" -eq 0 ]
+  [ ! -e "$HOME/.config/dotfiles/profile.sh" ]
+  [ ! -L "$HOME/.config/dotfiles/profile.sh" ]
+}
+
+@test "setup-common.sh leaves a real file at the profile.sh path untouched when the selected profile has no bashrc.sh" {
+  mkdir -p "$HOME/.config/dotfiles"
+  printf 'local content' > "$HOME/.config/dotfiles/profile.sh"
+  export DOTFILES_PROFILE=personal
+
+  run "$SETUP_COMMON_SH"
+
+  [ "$status" -eq 0 ]
+  [ -f "$HOME/.config/dotfiles/profile.sh" ]
+  [ ! -L "$HOME/.config/dotfiles/profile.sh" ]
+  [ "$(cat "$HOME/.config/dotfiles/profile.sh")" = "local content" ]
+}
+
+@test "setup-common.sh keeps an existing profile.sh link when SETUP_DRY_RUN is set and the selected profile has no bashrc.sh" {
+  "$SETUP_COMMON_SH" > /dev/null
+  export DOTFILES_PROFILE=personal
+  export SETUP_DRY_RUN=1
+
+  run "$SETUP_COMMON_SH"
+
+  [ "$status" -eq 0 ]
+  [ -L "$HOME/.config/dotfiles/profile.sh" ]
+}
+
+@test "setup-common.sh fails when no profile is selected" {
+  unset DOTFILES_PROFILE
+  run "$SETUP_COMMON_SH"
+  [ "$status" -ne 0 ]
+  [[ "$output" == *"No profile selected"* ]]
 }
 
 @test "setup-common.sh backs up a pre-existing real .bashrc before symlinking over it" {
@@ -106,7 +156,7 @@ teardown() {
   run "$SETUP_COMMON_SH"
   [ "$status" -eq 0 ]
   [ ! -e "$HOME/.bashrc" ]
-  [[ "$output" == *"[DRY RUN] Would symlink $HOME/.bashrc -> $REPO_DIR/home/.bashrc"* ]]
+  [[ "$output" == *"[DRY RUN] Would symlink $HOME/.bashrc -> $REPO_DIR/home/common/.bashrc"* ]]
 }
 
 @test "setup-common.sh is safe to re-run" {

@@ -11,6 +11,7 @@ setup() {
   # suppressing it.
   export SETUP_SKIP_NETWORK_INSTALLS=1
   mkdir -p "$HOME"
+  export DOTFILES_PROFILE=personal
 }
 
 teardown() {
@@ -21,7 +22,7 @@ teardown() {
   run "$SETUP_LINUX_SH"
   [ "$status" -eq 0 ]
   [ -L "$HOME/.config/Code/User/settings.json" ]
-  [ "$(readlink "$HOME/.config/Code/User/settings.json")" = "$REPO_DIR/home/dot_config/Code/User/settings.json" ]
+  [ "$(readlink "$HOME/.config/Code/User/settings.json")" = "$REPO_DIR/home/common/dot_config/Code/User/settings.json" ]
 }
 
 @test "setup-linux.sh backs up a pre-existing real settings.json before symlinking over it" {
@@ -52,7 +53,7 @@ teardown() {
   run "$SETUP_LINUX_SH"
   [ "$status" -eq 0 ]
   [ ! -e "$HOME/.config/Code/User/settings.json" ]
-  [[ "$output" == *"[DRY RUN] Would symlink $HOME/.config/Code/User/settings.json -> $REPO_DIR/home/dot_config/Code/User/settings.json"* ]]
+  [[ "$output" == *"[DRY RUN] Would symlink $HOME/.config/Code/User/settings.json -> $REPO_DIR/home/common/dot_config/Code/User/settings.json"* ]]
 }
 
 @test "setup-linux.sh reports dry-run for apt dependencies when SETUP_DRY_RUN is set" {
@@ -60,6 +61,21 @@ teardown() {
   run "$SETUP_LINUX_SH"
   [ "$status" -eq 0 ]
   [[ "$output" == *"Would apt-get install: bats jq just pre-commit shellcheck build-essential autoconf libssl-dev libyaml-dev zlib1g-dev libffi-dev libgmp-dev rustc patch libreadline6-dev libncurses5-dev libgdbm6 libgdbm-dev libdb-dev"* ]]
+}
+
+@test "setup-linux.sh skips apt installation without failing when the profile has no Aptfile.txt" {
+  export DOTFILES_PROFILE=work
+  run "$SETUP_LINUX_SH"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"No Aptfile.txt for profile work, skipping"* ]]
+  [[ "$output" != *"apt-get"* ]]
+}
+
+@test "setup-linux.sh fails when no profile is selected" {
+  unset DOTFILES_PROFILE
+  run "$SETUP_LINUX_SH"
+  [ "$status" -ne 0 ]
+  [[ "$output" == *"No profile selected"* ]]
 }
 
 @test "setup-linux.sh fails clearly instead of running apt-get when APTFILE does not exist" {
