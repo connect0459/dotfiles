@@ -178,5 +178,6 @@
   // ==========================================
   "settingsSync.ignoredSettings": [],
   "claudeCode.preferredLocation": "panel",
+  "remote.SSH.localServerDownload": "always",
   "terminal.integrated.initialHint": false
 }
